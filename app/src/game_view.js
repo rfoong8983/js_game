@@ -31,25 +31,27 @@ class GameView {
         // by star #shatter method
         this.miniStars = [];
         this.backgroundStars = [];
+        this.ticker = 0;
 
-        for (let i = 0; i < 1; i++) {
-            this.stars.push(new Star({
-                x: 600, 
-                y: 30, 
-                radius: 30, 
-                color: '#e3eaef',
-                ctx: this.ctx,
-                miniStars: this.miniStars
-            }));
-        }
+        // for (let i = 0; i < 1; i++) {
+        //     this.stars.push(new Star({
+        //         x: 600, 
+        //         y: 30, 
+        //         radius: 30, 
+        //         color: '#e3eaef',
+        //         ctx: this.ctx,
+        //         miniStars: this.miniStars
+        //     }));
+        // }
 
         for (let i = 0; i < 150; i++) {
             const x = Math.random() * 1200;
             const y = Math.random() * 800;
             const radius = Math.random() * 3
             this.backgroundStars.push(new Star({
-                x, y, radius, color: 'white', ctx: this.ctx
-            }))
+                x, y, radius, color: 'white', ctx: this.ctx,
+                miniStars: this.miniStars
+            }));
         }
     }
 
@@ -87,6 +89,16 @@ class GameView {
                 this.miniStars.splice(i, 1);
             }
         });
+
+        this.ticker++;
+        if (this.ticker % 75 === 0) {
+            const x = Math.random() * 1200;
+            this.stars.push(new Star({
+                x, y: -100, radius: 30, 
+                color: 'white', ctx: this.ctx, 
+                miniStars: this.miniStars
+            }));
+        }
     }
 
     createMountainRange(mountainAmount, height, color) {

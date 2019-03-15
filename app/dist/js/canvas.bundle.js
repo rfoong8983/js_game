@@ -268,24 +268,26 @@ var GameView = function () {
             // by star #shatter method
             this.miniStars = [];
             this.backgroundStars = [];
+            this.ticker = 0;
 
-            for (var i = 0; i < 1; i++) {
-                this.stars.push(new _star2.default({
-                    x: 600,
-                    y: 30,
-                    radius: 30,
-                    color: '#e3eaef',
-                    ctx: this.ctx,
-                    miniStars: this.miniStars
-                }));
-            }
+            // for (let i = 0; i < 1; i++) {
+            //     this.stars.push(new Star({
+            //         x: 600, 
+            //         y: 30, 
+            //         radius: 30, 
+            //         color: '#e3eaef',
+            //         ctx: this.ctx,
+            //         miniStars: this.miniStars
+            //     }));
+            // }
 
-            for (var _i = 0; _i < 150; _i++) {
+            for (var i = 0; i < 150; i++) {
                 var x = Math.random() * 1200;
                 var y = Math.random() * 800;
                 var radius = Math.random() * 3;
                 this.backgroundStars.push(new _star2.default({
-                    x: x, y: y, radius: radius, color: 'white', ctx: this.ctx
+                    x: x, y: y, radius: radius, color: 'white', ctx: this.ctx,
+                    miniStars: this.miniStars
                 }));
             }
         }
@@ -327,6 +329,16 @@ var GameView = function () {
                     _this.miniStars.splice(i, 1);
                 }
             });
+
+            this.ticker++;
+            if (this.ticker % 75 === 0) {
+                var x = Math.random() * 1200;
+                this.stars.push(new _star2.default({
+                    x: x, y: -100, radius: 30,
+                    color: 'white', ctx: this.ctx,
+                    miniStars: this.miniStars
+                }));
+            }
         }
     }, {
         key: 'createMountainRange',
@@ -390,7 +402,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     var ctx = canvasEl.getContext('2d');
     var game = new Game();
-    new _game_view2.default(game, ctx).start();
+    // new GameView(game, ctx).start();
 });
 
 /***/ }),
