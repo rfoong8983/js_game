@@ -86,6 +86,81 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/background/ambient_bkgrd.js":
+/*!*****************************************!*\
+  !*** ./src/background/ambient_bkgrd.js ***!
+  \*****************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _utils = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
+
+var utils = _interopRequireWildcard(_utils);
+
+var _particle = __webpack_require__(/*! ../shapes/particle */ "./src/shapes/particle.js");
+
+var _particle2 = _interopRequireDefault(_particle);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function AmbientBkg(ctx, radius, color, particles) {
+    this.ctx = ctx;
+    this.radius = radius;
+    this.color = color;
+    this.gravity = 1;
+    this.velocity = {
+        x: Math.random() * 2,
+        y: Math.random() * 1
+    };
+    this.ttl = 100;
+    this.opacity = 1;
+    this.particles = particles;
+}
+
+AmbientBkg.prototype.generate = function (n) {
+    // this.particles = [];
+    for (var i = 0; i < n; i++) {
+        this.particles.push(new _particle2.default({
+            x: (Math.random() - 0.8) * 1200,
+            y: (Math.random() - 0.8) * 800,
+            radius: this.radius,
+            color: 'rgba(227, 234, 239, 1)',
+            ctx: this.ctx
+        }));
+    }
+};
+
+AmbientBkg.prototype.draw = function () {
+    this.ctx.save();
+
+    this.ctx.beginPath();
+    this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+    this.ctx.fillStyle = this.color;
+    this.ctx.shadowColor = '#e3eaef';
+    this.ctx.shadowBlur = 20;
+    this.ctx.fill();
+    this.ctx.closePath();
+
+    this.ctx.restore();
+};
+
+AmbientBkg.prototype.update = function () {
+    this.draw();
+
+    this.velocity.y += this.gravity;
+    this.y += this.velocity.y;
+    this.ttl -= 1;
+};
+
+module.exports = AmbientBkg;
+
+/***/ }),
+
 /***/ "./src/background/gradient_bkgrd.js":
 /*!******************************************!*\
   !*** ./src/background/gradient_bkgrd.js ***!
@@ -212,6 +287,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var GradientBkg = __webpack_require__(/*! ../background/gradient_bkgrd */ "./src/background/gradient_bkgrd.js");
 var MountainsBkg = __webpack_require__(/*! ../background/mountains_bkgrd */ "./src/background/mountains_bkgrd.js");
+var AmbientBkg = __webpack_require__(/*! ../background/ambient_bkgrd */ "./src/background/ambient_bkgrd.js");
 
 var MOVES = {
     w: [0, -1],
@@ -227,6 +303,7 @@ var GameView = function () {
         this.staticCtx = staticCtx;
         this.animatedCtx = animatedCtx;
         this.game = game;
+        this.particles = [];
 
         this.init();
     }
@@ -238,22 +315,13 @@ var GameView = function () {
             this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
             this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
             this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
+            this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26', this.particles);
             this.stars = [];
             // this.miniStars is being changed
             // by star #shatter method
             this.miniStars = [];
             this.backgroundStars = [];
             this.ticker = 0;
-
-            // for (let i = 0; i < 150; i++) {
-            //     const x = Math.random() * 1200;
-            //     const y = Math.random() * 800;
-            //     const radius = Math.random() * 3
-            //     this.backgroundStars.push(new Star({
-            //         x, y, radius, color: 'white', ctx: this.animatedCtx,
-            //         miniStars: this.miniStars
-            //     }));
-            // }
         }
     }, {
         key: 'displayStaticBkgrd',
@@ -262,7 +330,6 @@ var GameView = function () {
             this.mountBkg1.draw();
             this.mountBkg2.draw();
             this.mountBkg3.draw();
-
             // this.backgroundStars.forEach(star => {
             //     star.draw();
             // });
@@ -270,42 +337,53 @@ var GameView = function () {
     }, {
         key: 'start',
         value: function start() {
+            this.displayStaticBkgrd();
             requestAnimationFrame(this.animate.bind(this));
         }
     }, {
         key: 'animate',
         value: function animate(time) {
-            var _this = this;
-
             this.animatedCtx.clearRect(0, 0, 1200, 800);
             requestAnimationFrame(this.animate.bind(this));
-            this.displayStaticBkgrd();
 
             // console.log(this.stars);
-            for (var i = 0; i < this.stars.length; i++) {
-                var star = this.stars[i];
-                this.stars[i].update();
-                if (this.stars[i].radius === 0) {
-                    this.stars.splice(i, 1);
+            // for (let i = 0; i < this.stars.length; i++) {
+            //     const star = this.stars[i];
+            //     this.stars[i].update();
+            //     if (this.stars[i].radius === 0 ) {
+            //         this.stars.splice(i, 1);
+            //     }
+            // }
+            for (var i = 0; i < this.particles.length; i++) {
+                this.particles[i].update();
+                if (this.particles[i].ttl === 0) {
+                    this.particles.splice(i, 1);
                 }
             }
+            console.log(this.particles.length);
 
-            this.miniStars.forEach(function (mini, i) {
-                mini.update();
-                if (mini.ttl === 0) {
-                    _this.miniStars.splice(i, 1);
-                }
-            });
+            // console.log(this.particles.length);
+            // this.miniStars.forEach((mini, i) => {
+            //     mini.update();
+            //     if (mini.ttl === 0) {
+            //         this.miniStars.splice(i, 1);
+            //     }
+            // });
 
             this.ticker++;
-            if (this.ticker % 75 === 0) {
+            if (this.ticker % 195 === 0) {
                 var x = Math.random() * 1200;
-                this.stars.push(new _star2.default({
-                    x: x, y: -100, radius: 30,
-                    color: 'white', ctx: this.animatedCtx,
-                    miniStars: this.miniStars
-                }));
+                // caps at about maximum 210-280 at once
+                this.ambientBkg.generate(70);
             }
+            // if (this.ticker % 75 === 0) {
+            //     const x = Math.random() * 1200;
+            //     this.stars.push(new Star({
+            //         x, y: -100, radius: 30, 
+            //         color: 'white', ctx: this.animatedCtx, 
+            //         miniStars: this.miniStars
+            //     }));
+            // }
         }
     }, {
         key: 'createMountainRange',
@@ -367,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var staticCtx = staticCanvas.getContext('2d');
     var animatedCtx = animatedCanvas.getContext('2d');
     var game = new Game();
-    // new GameView(game, staticCtx, animatedCtx).start();
+    new _game_view2.default(game, staticCtx, animatedCtx).start();
 });
 
 /***/ }),
@@ -560,6 +638,88 @@ var MiniStar = function () {
 }();
 
 exports.default = MiniStar;
+
+/***/ }),
+
+/***/ "./src/shapes/particle.js":
+/*!********************************!*\
+  !*** ./src/shapes/particle.js ***!
+  \********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _utils = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
+
+var utils = _interopRequireWildcard(_utils);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Particle = function () {
+    function Particle(options) {
+        _classCallCheck(this, Particle);
+
+        this.x = options.x;
+        this.y = options.y;
+        this.radius = options.radius;
+        this.color = options.color;
+        this.ctx = options.ctx;
+        this.gravity = 0.1;
+        this.friction = 0.8;
+        this.velocity = {
+            x: utils.randomIntFromRange(1, 5),
+            y: Math.random() * 3
+        };
+        // time to live = 100 frames
+        this.ttl = 750;
+        this.opacity = 1;
+    }
+
+    _createClass(Particle, [{
+        key: 'draw',
+        value: function draw() {
+            this.ctx.save();
+
+            this.ctx.beginPath();
+            this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
+            this.ctx.fillStyle = 'rgba(227, 234, 239, ' + this.opacity + ')';
+            this.ctx.shadowColor = '#e3eaef';
+            this.ctx.shadowBlur = 20;
+            this.ctx.fill();
+            this.ctx.closePath();
+
+            this.ctx.restore();
+        }
+    }, {
+        key: 'update',
+        value: function update() {
+            this.draw();
+
+            this.x += this.velocity.x;
+            this.y += this.velocity.y;
+            this.ttl -= 1;
+            // the lower ttl is, the larger the value
+            //    1 / ttl will return
+            // subtract a larger and larger value from
+            //    opacity the lower a ministar's ttl
+            this.opacity -= 1 / this.ttl;
+        }
+    }]);
+
+    return Particle;
+}();
+
+exports.default = Particle;
 
 /***/ }),
 

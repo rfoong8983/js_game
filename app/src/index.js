@@ -13,5 +13,5 @@ document.addEventListener('DOMContentLoaded', function () {
     const staticCtx = staticCanvas.getContext('2d');
     const animatedCtx = animatedCanvas.getContext('2d');
     const game = new Game();
-    // new GameView(game, staticCtx, animatedCtx).start();
+    new GameView(game, staticCtx, animatedCtx).start();
 });

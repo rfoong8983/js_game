@@ -4,40 +4,48 @@
     <meta charset="UTF-8">
     <title>Canvas Template</title>
     <style>
-        body {
+        html body {
             margin: 0;
             height: 100%;
             width: 100%;
         }
-        canvas {
-            border: 1px solid rgb(4, 4, 19);
-            position: 
-        }
+
         .window {
             margin-top: 12px;
             display: flex;
             justify-content: center;
         }
+        .centered {
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
         #staticCanvas, #animatedCanvas {
             position: absolute;
+            border: 1px solid rgb(4, 4, 19);
+            left: 16%;
+            top: 1%;
+        }
+
+        #animatedCanvas {
+            z-index: 2;
         }
 
         #staticCanvas {
             z-index: 0;
         };
 
-        #animatedCanvas {
-            z-index: 2;
-        }
-
     </style>
 </head>
 <body>
     <div class="window">
-        <canvas id="staticCanvas"></canvas>
-        <canvas id="animatedCanvas"></canvas>
-        <!-- <script src="canvas.js"></script> -->
+        <div class="centered">
+            <canvas id="staticCanvas"></canvas>
+            <canvas id="animatedCanvas"></canvas>
+            <!-- <script src="canvas.js"></script> -->
+        </div>
     </div>
 <script type="text/javascript" src="./js/canvas.bundle.js"></script></body>
 </html>
