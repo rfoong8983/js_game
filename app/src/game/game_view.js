@@ -1,9 +1,12 @@
 import { Circle, generateCircles } from '../shapes/circle.js';
 import Star from '../shapes/star';
 import MiniStar from '../shapes/ministar';
+import Particle from '../shapes/particle';
+import * as utils from '../utils/utils';
 const GradientBkg = require('../background/gradient_bkgrd');
 const MountainsBkg = require('../background/mountains_bkgrd');
 const AmbientBkg = require('../background/ambient_bkgrd');
+
 
 const MOVES = {
     w: [0, -1],
@@ -13,11 +16,13 @@ const MOVES = {
 };
 
 class GameView {
-    constructor(game, staticCtx, animatedCtx) {
+    constructor(game, staticCtx, animatedCtx, offScreenCtx, animatedCanvas) {
         this.staticCtx = staticCtx;
         this.animatedCtx = animatedCtx;
+        this.offScreenBkg = offScreenCtx;
+        this.preloaded = [];
         this.game = game;
-        this.particles = [];
+        // this.particles = [];
         
         this.init();
     }
@@ -26,20 +31,22 @@ class GameView {
         return MOVES;
     }
 
-    init() {
-        this.gradBkg = new GradientBkg(this.staticCtx, '#171e26', '#3f586b');
-        this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
-        this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
-        this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
-        this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26', this.particles);
-        this.stars = [];
-        // this.miniStars is being changed
-        // by star #shatter method
-        this.miniStars = [];
-        this.backgroundStars = [];
-        this.ticker = 0;
+    // move gradients and static images out of animation
+    // draw snow in off-screen canvas
+    // putImageData onto my screen when ticker % x === 0
+    generateOffScreenParticles() {
+        for (let i = 0; i < 70; i++) {
+            this.preloaded.push(new Particle({
+                x: this.offScreenBkg.canvas.width, 
+                y: this.offScreenBkg.canvas.height,
+                radius: Math.random() * 2,
+                color: `rgba(227, 234, 239, 1)`,
+                ctx: this.animatedCtx, 
+                ttl: 700
+            }));
+        }
     }
-
+    
     displayStaticBkgrd() {
         this.gradBkg.draw();
         this.mountBkg1.draw();
@@ -50,14 +57,32 @@ class GameView {
         // });
     }
 
+    init() {
+        this.gradBkg = new GradientBkg(this.staticCtx, '#171e26', '#3f586b');
+        this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
+        this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
+        this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
+        this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26');
+
+        this.generateOffScreenParticles();
+        // console.log(this.offScreenBkg.particles);
+        
+        this.stars = [];
+        // this.miniStars is being changed
+        // by star #shatter method
+        this.miniStars = [];
+        this.backgroundStars = [];
+        this.ticker = 0;
+    }
+
     start() {
-        this.displayStaticBkgrd();
         requestAnimationFrame(this.animate.bind(this));
     }
 
     animate(time) {
         this.animatedCtx.clearRect(0, 0, 1200, 800);
         requestAnimationFrame(this.animate.bind(this));
+        this.displayStaticBkgrd();
         
         // console.log(this.stars);
         // for (let i = 0; i < this.stars.length; i++) {
@@ -67,15 +92,21 @@ class GameView {
         //         this.stars.splice(i, 1);
         //     }
         // }
-        for (let i = 0; i < this.particles.length; i++) {
-            this.particles[i].update();
-            if (this.particles[i].ttl === 0 ) {
-                this.particles.splice(i, 1);
-            }
-        }
-        console.log(this.particles.length);
 
-        // console.log(this.particles.length);
+        
+
+
+        for (let i = 0; i < this.ambientBkg.prev.length; i++) {
+            // console.log(this.ambientBkg.prev[i]);
+            this.ambientBkg.prev[i].update();
+            // console.log(this.ambientBkg.prev);
+            if (this.ambientBkg.prev[i].ttl === 0 ) {
+                this.ambientBkg.prev.splice(i, 1);
+            }
+
+            
+        }
+        
         // this.miniStars.forEach((mini, i) => {
         //     mini.update();
         //     if (mini.ttl === 0) {
@@ -86,9 +117,18 @@ class GameView {
         this.ticker++;
         if (this.ticker % 195 === 0) {
             const x = Math.random() * 1200;
-            // caps at about maximum 210-280 at once
-            this.ambientBkg.generate(70);
+
+            this.ambientBkg.generate2(this.preloaded);
+            console.log(this.ambientBkg.prev);
         }
+        
+        // this.ticker++;
+        // if (this.ticker % 195 === 0) {
+        //     const x = Math.random() * 1200;
+        //     // caps at about maximum 210-280 at once
+        //     this.ambientBkg.generate(70);
+        // }
+        // console.log(this.prev.length);
         // if (this.ticker % 75 === 0) {
         //     const x = Math.random() * 1200;
         //     this.stars.push(new Star({
