@@ -17442,34 +17442,34 @@ function OffScreenCtx(scWidth, scHeight, proportion) {
     this.particles = [];
 }
 
-OffScreenCtx.prototype.generate = function (options) {
-    var x = options.x;
-    var y = options.y;
-    var radius = options.radius;
-    var color = options.color;
-    var ttl = options.ttl;
-    var count = options.count;
-    // const velocity = {
-    //     x: options.velocity.x,
-    //     y: options.velocity.y
-    // };
-
-
-    for (var i = 0; i < count; i++) {
-        this.particles.push(new _particle2.default({
-            x: x, y: y, radius: radius, color: color, ttl: ttl, ctx: this.ctx
-        }));
-    }
-};
-
-OffScreenCtx.prototype.draw = function (x, y, radius, color, ttl) {
-    this.ctx.beginPath();
-    this.ctx.arc(x, y, radius, 0, Math.PI * 2, false);
-    this.ctx.fillStyle(color);
-    this.ctx.fill();
-};
-
 module.exports = OffScreenCtx;
+
+// OffScreenCtx.prototype.generate = function (options) {
+//     const x = options.x;
+//     const y = options.y;
+//     const radius = options.radius;
+//     const color = options.color;
+//     const ttl = options.ttl;
+//     const count = options.count;
+//     // const velocity = {
+//     //     x: options.velocity.x,
+//     //     y: options.velocity.y
+//     // };
+
+
+//     for (let i = 0; i < count; i++) {
+//         this.particles.push(new Particle({
+//             x, y, radius, color, ttl, ctx: this.ctx
+//         }));
+//     }
+// };
+
+// OffScreenCtx.prototype.draw = function (x, y, radius, color, ttl) {
+//     this.ctx.beginPath();
+//     this.ctx.arc(x, y, radius, 0, Math.PI * 2, false);
+//     this.ctx.fillStyle(color);
+//     this.ctx.fill();
+// };
 
 /***/ }),
 
