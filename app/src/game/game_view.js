@@ -2,33 +2,47 @@ import { Circle, generateCircles } from '../shapes/circle.js';
 import Star from '../shapes/star';
 import MiniStar from '../shapes/ministar';
 import Particle from '../shapes/particle';
+import MovingObject from '../entities/moving_object';
 import * as utils from '../utils/utils';
 const GradientBkg = require('../background/gradient_bkgrd');
 const MountainsBkg = require('../background/mountains_bkgrd');
 const AmbientBkg = require('../background/ambient_bkgrd');
 
 
-const MOVES = {
-    w: [0, -1],
-    a: [-1, 0],
-    s: [0, 1],
-    d: [1, 0]
+const KEY_DOWN_MOVES = {
+    87: [0, -3], // 87 w
+    65: [-3, 0], // 65 a
+    83: [0, 3], // 83 s
+    68: [3, 0] // 68 d
 };
 
 class GameView {
-    constructor(game, staticCtx, animatedCtx, offScreenCtx, animatedCanvas) {
+    constructor(game, staticCtx, animatedCtx, gameCtx, offScreenCtx, animatedCanvas) {
         this.staticCtx = staticCtx;
         this.animatedCtx = animatedCtx;
+        this.gameCtx = gameCtx;
         this.offScreenBkg = offScreenCtx;
         this.preloaded = [];
         this.game = game;
+        this.movingObject = this.game.addMovingObject();
         // this.particles = [];
-        
         this.init();
     }
 
-    static get MOVES() {
-        return MOVES;
+    bindKeyHandlers() {
+        const movingObject = this.movingObject;
+
+        document.addEventListener('keydown', (e) => {
+            const move = KEY_DOWN_MOVES[JSON.stringify(e.which)];
+            console.log(movingObject.velocity);
+            movingObject.power(move);
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            // console.log(e)
+            console.log(movingObject.velocity);
+            movingObject.power([0,0]);
+        });
     }
 
     // move gradients and static images out of animation
@@ -64,6 +78,8 @@ class GameView {
         this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
         this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26');
 
+        this.displayStaticBkgrd();
+
         this.generateOffScreenParticles();
         // console.log(this.offScreenBkg.particles);
         
@@ -76,14 +92,18 @@ class GameView {
     }
 
     start() {
+        this.bindKeyHandlers();
+        this.lastTime = 0;
         requestAnimationFrame(this.animate.bind(this));
     }
 
     animate(time) {
+        const timeDelta = time - this.lastTime;
         this.animatedCtx.clearRect(0, 0, 1200, 800);
         requestAnimationFrame(this.animate.bind(this));
-        this.displayStaticBkgrd();
         
+        this.game.step(timeDelta);
+        this.game.draw(this.gameCtx);
         // console.log(this.stars);
         // for (let i = 0; i < this.stars.length; i++) {
         //     const star = this.stars[i];
@@ -114,13 +134,14 @@ class GameView {
         //     }
         // });
 
-        this.ticker++;
-        if (this.ticker === 10 || this.ticker % 175 === 0) {
-            const x = Math.random() * 1200;
+        //      ###############   COMMENT ME BBACK IN !!!!
+        // this.ticker++;
+        // if (this.ticker === 10 || this.ticker % 175 === 0) {
+        //     const x = Math.random() * 1200;
 
-            this.ambientBkg.generate(this.preloaded);
-            console.log(this.ambientBkg.prev);
-        }
+        //     this.ambientBkg.generate(this.preloaded);
+        //     console.log(this.ambientBkg.prev);
+        // }
         
         // this.ticker++;
         // if (this.ticker % 195 === 0) {
