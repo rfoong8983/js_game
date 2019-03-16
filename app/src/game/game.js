@@ -35,10 +35,20 @@ function Game() {
         return movingObject;
     };
 
+    Game.prototype.moveObjects = function (delta) {
+        this.allEntities().forEach((object) => {
+            object.move(delta);
+        });
+    };
+
+    Game.prototype.step = function (delta) {
+        this.moveObjects(delta);
+    };
+
     Game.prototype.draw = function draw(ctx) {
         ctx.clearRect(0, 0, Game.X, Game.Y);
         
-        this.allEntities().forEach(function(object) {
+        this.allEntities().forEach((object) => {
             object.draw(ctx);
         });
     };

@@ -22,6 +22,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const offScreenCtx = new OffScreenCtx(staticCanvas.width, staticCanvas.height, 2);
 
     const game = new Game();
-    // new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx).start();
-    new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx);
+    new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx).start();
+    // new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx);
 });

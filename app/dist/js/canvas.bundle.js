@@ -17493,6 +17493,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var utils = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
 
+var NORMAL_FRAME_TIME_DELTA = 100; // 1000 / 60;
+
 var MovingObject = function () {
     function MovingObject(options) {
         _classCallCheck(this, MovingObject);
@@ -17512,6 +17514,28 @@ var MovingObject = function () {
             ctx.arc(this.pos[0], this.pos[1], this.radius, 0, Math.PI * 2, false);
             ctx.fill();
             ctx.closePath();
+        }
+    }, {
+        key: 'move',
+        value: function move(timeDelta) {
+            // timeDelta = # of ms since last move
+            // timeDelta can vary; if timeDelta increases
+            // distance of next move should increase
+            // velocity = distance moved in 1/60 sec
+            // const velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA,
+            // offsetX = this.velocity[0] * velocityScale,
+            // offsetY = this.velocity[1] * velocityScale;
+            var offsetX = this.velocity[0] * 1,
+                offsetY = this.velocity[1] * 1;
+
+            this.pos = [this.pos[0] + offsetX, this.pos[1] + offsetY];
+            // this.pos = [this.pos[0], this.pos[1]];
+        }
+    }, {
+        key: 'power',
+        value: function power(impulse) {
+            this.velocity[0] = impulse[0];
+            this.velocity[1] = impulse[1];
         }
     }]);
 
@@ -17571,6 +17595,16 @@ function Game() {
 
         this.add(movingObject);
         return movingObject;
+    };
+
+    Game.prototype.moveObjects = function (delta) {
+        this.allEntities().forEach(function (object) {
+            object.move(delta);
+        });
+    };
+
+    Game.prototype.step = function (delta) {
+        this.moveObjects(delta);
     };
 
     Game.prototype.draw = function draw(ctx) {
@@ -17634,11 +17668,11 @@ var GradientBkg = __webpack_require__(/*! ../background/gradient_bkgrd */ "./src
 var MountainsBkg = __webpack_require__(/*! ../background/mountains_bkgrd */ "./src/background/mountains_bkgrd.js");
 var AmbientBkg = __webpack_require__(/*! ../background/ambient_bkgrd */ "./src/background/ambient_bkgrd.js");
 
-var MOVES = {
-    w: [0, -1],
-    a: [-1, 0],
-    s: [0, 1],
-    d: [1, 0]
+var KEY_DOWN_MOVES = {
+    87: [0, -3], // 87 w
+    65: [-3, 0], // 65 a
+    83: [0, 3], // 83 s
+    68: [3, 0] // 68 d
 };
 
 var GameView = function () {
@@ -17653,17 +17687,33 @@ var GameView = function () {
         this.game = game;
         this.movingObject = this.game.addMovingObject();
         // this.particles = [];
-
         this.init();
     }
 
     _createClass(GameView, [{
-        key: 'generateOffScreenParticles',
+        key: 'bindKeyHandlers',
+        value: function bindKeyHandlers() {
+            var movingObject = this.movingObject;
 
+            document.addEventListener('keydown', function (e) {
+                var move = KEY_DOWN_MOVES[JSON.stringify(e.which)];
+                console.log(movingObject.velocity);
+                movingObject.power(move);
+            });
+
+            document.addEventListener('keyup', function (e) {
+                // console.log(e)
+                console.log(movingObject.velocity);
+                movingObject.power([0, 0]);
+            });
+        }
 
         // move gradients and static images out of animation
         // draw snow in off-screen canvas
         // putImageData onto my screen when ticker % x === 0
+
+    }, {
+        key: 'generateOffScreenParticles',
         value: function generateOffScreenParticles() {
             for (var i = 0; i < 70; i++) {
                 this.preloaded.push(new _particle2.default({
@@ -17711,6 +17761,7 @@ var GameView = function () {
     }, {
         key: 'start',
         value: function start() {
+            this.bindKeyHandlers();
             this.lastTime = 0;
             requestAnimationFrame(this.animate.bind(this));
         }
@@ -17721,6 +17772,7 @@ var GameView = function () {
             this.animatedCtx.clearRect(0, 0, 1200, 800);
             requestAnimationFrame(this.animate.bind(this));
 
+            this.game.step(timeDelta);
             this.game.draw(this.gameCtx);
             // console.log(this.stars);
             // for (let i = 0; i < this.stars.length; i++) {
@@ -17748,13 +17800,14 @@ var GameView = function () {
             //     }
             // });
 
-            this.ticker++;
-            if (this.ticker === 10 || this.ticker % 175 === 0) {
-                var x = Math.random() * 1200;
+            //      ###############   COMMENT ME BBACK IN !!!!
+            // this.ticker++;
+            // if (this.ticker === 10 || this.ticker % 175 === 0) {
+            //     const x = Math.random() * 1200;
 
-                this.ambientBkg.generate(this.preloaded);
-                console.log(this.ambientBkg.prev);
-            }
+            //     this.ambientBkg.generate(this.preloaded);
+            //     console.log(this.ambientBkg.prev);
+            // }
 
             // this.ticker++;
             // if (this.ticker % 195 === 0) {
@@ -17787,11 +17840,6 @@ var GameView = function () {
                 this.animatedCtx.fillStyle = color;
                 this.animatedCtx.fill();
             }
-        }
-    }], [{
-        key: 'MOVES',
-        get: function get() {
-            return MOVES;
         }
     }]);
 
@@ -17842,8 +17890,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var offScreenCtx = new OffScreenCtx(staticCanvas.width, staticCanvas.height, 2);
 
     var game = new Game();
-    // new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx).start();
-    new _game_view2.default(game, staticCtx, animatedCtx, gameCtx, offScreenCtx);
+    new _game_view2.default(game, staticCtx, animatedCtx, gameCtx, offScreenCtx).start();
+    // new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx);
 });
 
 /***/ }),
