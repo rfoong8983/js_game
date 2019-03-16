@@ -1,7 +1,8 @@
 import * as utils from '../utils/utils';
 import Particle from '../shapes/particle';
+import { clonedeep } from 'lodash';
 
-function AmbientBkg (ctx, radius, color, particles) {
+function AmbientBkg (ctx, radius, color, prev) {
     this.ctx = ctx;
     this.radius = radius;
     this.color = color;
@@ -12,13 +13,13 @@ function AmbientBkg (ctx, radius, color, particles) {
     };
     this.ttl = 100;
     this.opacity = 1;
-    this.particles = particles;
+    this.prev = [];
 }
 
 AmbientBkg.prototype.generate = function(n) {
-    // this.particles = [];
+    // this.prev = [];
     for (let i = 0; i < n; i ++) {
-        this.particles.push(new Particle({
+        this.prev.push(new Particle({
             x: (Math.random() - 0.8) * 1200,
             y: (Math.random() - 0.8) * 800,
             radius: this.radius,
@@ -28,8 +29,12 @@ AmbientBkg.prototype.generate = function(n) {
     }
 };
 
+AmbientBkg.prototype.generate2 = function(preloadedParticles) {
+    this.prev = this.prev.concat(_.cloneDeep(preloadedParticles));
+};
+
 AmbientBkg.prototype.draw = function() {
-    this.ctx.save();
+    // this.ctx.save();
 
     this.ctx.beginPath();
     this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
@@ -39,7 +44,7 @@ AmbientBkg.prototype.draw = function() {
     this.ctx.fill();
     this.ctx.closePath();
 
-    this.ctx.restore();
+    // this.ctx.restore();
 };
 
 AmbientBkg.prototype.update = function() {

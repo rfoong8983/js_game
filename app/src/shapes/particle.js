@@ -2,8 +2,11 @@ import * as utils from '../utils/utils';
 
 class Particle {
     constructor(options) {
-        this.x = options.x;
-        this.y = options.y;
+        // screen dimensions are passed in 
+        // for x & y values.
+        // x & y values are dimensions * random (0.0 - 1.0)
+        this.x = Math.random() * options.x -325;
+        this.y = Math.random() * options.y -325;
         this.radius = options.radius;
         this.color = options.color;
         this.ctx = options.ctx;
@@ -12,9 +15,11 @@ class Particle {
         this.velocity = {
             x: utils.randomIntFromRange(1, 5),
             y: Math.random() * 3
+            // x: options.velocity.x,
+            // y: options.velocity.y
         };
         // time to live = 100 frames
-        this.ttl = 750;
+        this.ttl = options.ttl;
         this.opacity = 1;
     }
 
