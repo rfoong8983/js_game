@@ -115,7 +115,7 @@ class GameView {
         // });
 
         this.ticker++;
-        if (this.ticker % 195 === 0) {
+        if (this.ticker === 10 || this.ticker % 175 === 0) {
             const x = Math.random() * 1200;
 
             this.ambientBkg.generate2(this.preloaded);

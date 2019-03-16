@@ -17644,7 +17644,7 @@ var GameView = function () {
             // });
 
             this.ticker++;
-            if (this.ticker % 195 === 0) {
+            if (this.ticker === 10 || this.ticker % 175 === 0) {
                 var x = Math.random() * 1200;
 
                 this.ambientBkg.generate2(this.preloaded);
@@ -17733,8 +17733,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var offScreenCtx = new OffScreenCtx(staticCanvas.width, staticCanvas.height, 2);
 
     var game = new Game();
-    new _game_view2.default(game, staticCtx, animatedCtx, offScreenCtx).start();
-    // new GameView(game, staticCtx, animatedCtx, offScreenCtx);
+    // new GameView(game, staticCtx, animatedCtx, offScreenCtx).start();
+    new _game_view2.default(game, staticCtx, animatedCtx, offScreenCtx);
 });
 
 var createContext = function createContext(scWidth, scHeight, proportion) {

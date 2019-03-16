@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const offScreenCtx = new OffScreenCtx(staticCanvas.width, staticCanvas.height, 2);
 
     const game = new Game();
-    new GameView(game, staticCtx, animatedCtx, offScreenCtx).start();
-    // new GameView(game, staticCtx, animatedCtx, offScreenCtx);
+    // new GameView(game, staticCtx, animatedCtx, offScreenCtx).start();
+    new GameView(game, staticCtx, animatedCtx, offScreenCtx);
 });
 
 const createContext = (scWidth, scHeight, proportion) => {
