@@ -86,10 +86,296 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./src/circle.js":
-/*!***********************!*\
-  !*** ./src/circle.js ***!
-  \***********************/
+/***/ "./src/background/gradient_bkgrd.js":
+/*!******************************************!*\
+  !*** ./src/background/gradient_bkgrd.js ***!
+  \******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _utils = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
+
+var utils = _interopRequireWildcard(_utils);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function GradientBkg(ctx, startColor, endColor) {
+    this.ctx = ctx;
+    this.startColor = startColor;
+    this.endColor = endColor;
+    this.bkg = this.ctx.createLinearGradient(0, 0, 0, 800);
+}
+
+GradientBkg.prototype.draw = function () {
+    this.bkg.addColorStop(0, this.startColor);
+    this.bkg.addColorStop(1, this.endColor);
+    this.ctx.fillStyle = this.bkg;
+    this.ctx.fillRect(0, 0, 1200, 800);
+};
+
+module.exports = GradientBkg;
+
+/***/ }),
+
+/***/ "./src/background/mountains_bkgrd.js":
+/*!*******************************************!*\
+  !*** ./src/background/mountains_bkgrd.js ***!
+  \*******************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _utils = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
+
+var utils = _interopRequireWildcard(_utils);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+function MountainsBkg(ctx, amount, height, color) {
+    // canvas - height = distance from top of screen
+    // the higher the height, the taller the mtn
+    this.ctx = ctx;
+    this.amount = amount;
+    this.height = height;
+    this.color = color;
+}
+
+MountainsBkg.prototype.draw = function () {
+    for (var i = 0; i < this.amount; i++) {
+        var width = 1200 / this.amount;
+        this.ctx.beginPath();
+        this.ctx.moveTo(i * width, 1200);
+        this.ctx.lineTo(i * width + width + 325, 800);
+        this.ctx.lineTo(i * width + width / 2, 800 - this.height);
+        this.ctx.lineTo(i * width - 325, 800);
+        this.ctx.fillStyle = this.color;
+        this.ctx.fill();
+    }
+};
+
+module.exports = MountainsBkg;
+
+/***/ }),
+
+/***/ "./src/game/game.js":
+/*!**************************!*\
+  !*** ./src/game/game.js ***!
+  \**************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function Game() {
+    this.test = [];
+}
+
+module.exports = Game;
+
+/***/ }),
+
+/***/ "./src/game/game_view.js":
+/*!*******************************!*\
+  !*** ./src/game/game_view.js ***!
+  \*******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _circle = __webpack_require__(/*! ../shapes/circle.js */ "./src/shapes/circle.js");
+
+var _star = __webpack_require__(/*! ../shapes/star */ "./src/shapes/star.js");
+
+var _star2 = _interopRequireDefault(_star);
+
+var _ministar = __webpack_require__(/*! ../shapes/ministar */ "./src/shapes/ministar.js");
+
+var _ministar2 = _interopRequireDefault(_ministar);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var GradientBkg = __webpack_require__(/*! ../background/gradient_bkgrd */ "./src/background/gradient_bkgrd.js");
+var MountainsBkg = __webpack_require__(/*! ../background/mountains_bkgrd */ "./src/background/mountains_bkgrd.js");
+
+var MOVES = {
+    w: [0, -1],
+    a: [-1, 0],
+    s: [0, 1],
+    d: [1, 0]
+};
+
+var GameView = function () {
+    function GameView(game, staticCtx, animatedCtx) {
+        _classCallCheck(this, GameView);
+
+        this.staticCtx = staticCtx;
+        this.animatedCtx = animatedCtx;
+        this.game = game;
+
+        this.init();
+    }
+
+    _createClass(GameView, [{
+        key: 'init',
+        value: function init() {
+            this.gradBkg = new GradientBkg(this.staticCtx, '#171e26', '#3f586b');
+            this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
+            this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
+            this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
+            this.stars = [];
+            // this.miniStars is being changed
+            // by star #shatter method
+            this.miniStars = [];
+            this.backgroundStars = [];
+            this.ticker = 0;
+
+            // for (let i = 0; i < 150; i++) {
+            //     const x = Math.random() * 1200;
+            //     const y = Math.random() * 800;
+            //     const radius = Math.random() * 3
+            //     this.backgroundStars.push(new Star({
+            //         x, y, radius, color: 'white', ctx: this.animatedCtx,
+            //         miniStars: this.miniStars
+            //     }));
+            // }
+        }
+    }, {
+        key: 'displayStaticBkgrd',
+        value: function displayStaticBkgrd() {
+            this.gradBkg.draw();
+            this.mountBkg1.draw();
+            this.mountBkg2.draw();
+            this.mountBkg3.draw();
+
+            // this.backgroundStars.forEach(star => {
+            //     star.draw();
+            // });
+        }
+    }, {
+        key: 'start',
+        value: function start() {
+            requestAnimationFrame(this.animate.bind(this));
+        }
+    }, {
+        key: 'animate',
+        value: function animate(time) {
+            var _this = this;
+
+            this.animatedCtx.clearRect(0, 0, 1200, 800);
+            requestAnimationFrame(this.animate.bind(this));
+            this.displayStaticBkgrd();
+
+            // console.log(this.stars);
+            for (var i = 0; i < this.stars.length; i++) {
+                var star = this.stars[i];
+                this.stars[i].update();
+                if (this.stars[i].radius === 0) {
+                    this.stars.splice(i, 1);
+                }
+            }
+
+            this.miniStars.forEach(function (mini, i) {
+                mini.update();
+                if (mini.ttl === 0) {
+                    _this.miniStars.splice(i, 1);
+                }
+            });
+
+            this.ticker++;
+            if (this.ticker % 75 === 0) {
+                var x = Math.random() * 1200;
+                this.stars.push(new _star2.default({
+                    x: x, y: -100, radius: 30,
+                    color: 'white', ctx: this.animatedCtx,
+                    miniStars: this.miniStars
+                }));
+            }
+        }
+    }, {
+        key: 'createMountainRange',
+        value: function createMountainRange(mountainAmount, height, color) {
+            // canvas - height = distance from top of screen
+            for (var i = 0; i < mountainAmount; i++) {
+                var mountainWidth = 1200 / mountainAmount;
+
+                this.animatedCtx.beginPath();
+                this.animatedCtx.moveTo(i * mountainWidth, 800);
+                this.animatedCtx.lineTo(i * mountainWidth + mountainWidth + 325, 800);
+                this.animatedCtx.lineTo(i * mountainWidth + mountainWidth / 2, 800 - height);
+                this.animatedCtx.lineTo(i * mountainWidth - 325, 800);
+                this.animatedCtx.fillStyle = color;
+                this.animatedCtx.fill();
+            }
+        }
+    }], [{
+        key: 'MOVES',
+        get: function get() {
+            return MOVES;
+        }
+    }]);
+
+    return GameView;
+}();
+
+exports.default = GameView;
+
+/***/ }),
+
+/***/ "./src/index.js":
+/*!**********************!*\
+  !*** ./src/index.js ***!
+  \**********************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _game_view = __webpack_require__(/*! ./game/game_view */ "./src/game/game_view.js");
+
+var _game_view2 = _interopRequireDefault(_game_view);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Game = __webpack_require__(/*! ./game/game */ "./src/game/game.js");
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    var staticCanvas = document.getElementById("staticCanvas");
+    var animatedCanvas = document.getElementById("animatedCanvas");
+    staticCanvas.width = 1200;
+    staticCanvas.height = 800;
+    animatedCanvas.width = 1200;
+    animatedCanvas.height = 800;
+
+    var staticCtx = staticCanvas.getContext('2d');
+    var animatedCtx = animatedCanvas.getContext('2d');
+    var game = new Game();
+    // new GameView(game, staticCtx, animatedCtx).start();
+});
+
+/***/ }),
+
+/***/ "./src/shapes/circle.js":
+/*!******************************!*\
+  !*** ./src/shapes/circle.js ***!
+  \******************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -103,7 +389,7 @@ exports.generateCircles = exports.Circle = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _utils = __webpack_require__(/*! ./utils */ "./src/utils.js");
+var _utils = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
 
 var utils = _interopRequireWildcard(_utils);
 
@@ -189,30 +475,10 @@ var generateCircles = exports.generateCircles = function generateCircles(options
 
 /***/ }),
 
-/***/ "./src/game.js":
-/*!*********************!*\
-  !*** ./src/game.js ***!
-  \*********************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var Circle = __webpack_require__(/*! ./circle */ "./src/circle.js");
-
-function Game() {
-    this.test = [];
-}
-
-module.exports = Game;
-
-/***/ }),
-
-/***/ "./src/game_view.js":
-/*!**************************!*\
-  !*** ./src/game_view.js ***!
-  \**************************/
+/***/ "./src/shapes/ministar.js":
+/*!********************************!*\
+  !*** ./src/shapes/ministar.js ***!
+  \********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -225,205 +491,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _circle = __webpack_require__(/*! ./circle.js */ "./src/circle.js");
-
-var _star = __webpack_require__(/*! ./star */ "./src/star.js");
-
-var _star2 = _interopRequireDefault(_star);
-
-var _ministar = __webpack_require__(/*! ./ministar */ "./src/ministar.js");
-
-var _ministar2 = _interopRequireDefault(_ministar);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var MOVES = {
-    w: [0, -1],
-    a: [-1, 0],
-    s: [0, 1],
-    d: [1, 0]
-};
-
-var GameView = function () {
-    function GameView(game, ctx) {
-        _classCallCheck(this, GameView);
-
-        this.ctx = ctx;
-        this.game = game;
-        // this.backgroundA = generateCircles({ size: 180, speed: 2, radius: 1, ctx: this.ctx });
-        // this.backgroundB = generateCircles({ size: 80, speed: 1, endSpeed: 4, radius: 3, ctx: this.ctx });
-        this.backgroundGradient = this.ctx.createLinearGradient(0, 0, 0, 1200);
-        this.backgroundGradient.addColorStop(0, '#171e26');
-        this.backgroundGradient.addColorStop(1, '#3f586b');
-        this.init();
-    }
-
-    _createClass(GameView, [{
-        key: 'init',
-        value: function init() {
-            this.stars = [];
-            // this.miniStars is being changed
-            // by star #shatter method
-            this.miniStars = [];
-            this.backgroundStars = [];
-            this.ticker = 0;
-
-            // for (let i = 0; i < 1; i++) {
-            //     this.stars.push(new Star({
-            //         x: 600, 
-            //         y: 30, 
-            //         radius: 30, 
-            //         color: '#e3eaef',
-            //         ctx: this.ctx,
-            //         miniStars: this.miniStars
-            //     }));
-            // }
-
-            for (var i = 0; i < 150; i++) {
-                var x = Math.random() * 1200;
-                var y = Math.random() * 800;
-                var radius = Math.random() * 3;
-                this.backgroundStars.push(new _star2.default({
-                    x: x, y: y, radius: radius, color: 'white', ctx: this.ctx,
-                    miniStars: this.miniStars
-                }));
-            }
-        }
-    }, {
-        key: 'start',
-        value: function start() {
-            requestAnimationFrame(this.animate.bind(this));
-        }
-    }, {
-        key: 'animate',
-        value: function animate(time) {
-            var _this = this;
-
-            this.ctx.clearRect(0, 0, 1200, 800);
-            requestAnimationFrame(this.animate.bind(this));
-
-            this.ctx.fillStyle = this.backgroundGradient;
-            this.ctx.fillRect(0, 0, 1200, 800);
-
-            this.backgroundStars.forEach(function (star) {
-                star.draw();
-            });
-
-            this.createMountainRange(1, 750, '#384551');
-            this.createMountainRange(2, 700, '#2b3843');
-            this.createMountainRange(3, 500, '#26333E');
-
-            // console.log(this.stars);
-            for (var i = 0; i < this.stars.length; i++) {
-                var star = this.stars[i];
-                this.stars[i].update(this.ctx);
-                if (this.stars[i].radius === 0) {
-                    this.stars.splice(i, 1);
-                }
-            }
-            this.miniStars.forEach(function (mini, i) {
-                mini.update();
-                if (mini.ttl === 0) {
-                    _this.miniStars.splice(i, 1);
-                }
-            });
-
-            this.ticker++;
-            if (this.ticker % 75 === 0) {
-                var x = Math.random() * 1200;
-                this.stars.push(new _star2.default({
-                    x: x, y: -100, radius: 30,
-                    color: 'white', ctx: this.ctx,
-                    miniStars: this.miniStars
-                }));
-            }
-        }
-    }, {
-        key: 'createMountainRange',
-        value: function createMountainRange(mountainAmount, height, color) {
-            // canvas - height = distance from top of screen
-            for (var i = 0; i < mountainAmount; i++) {
-                var mountainWidth = 1200 / mountainAmount;
-
-                this.ctx.beginPath();
-                this.ctx.moveTo(i * mountainWidth, 800);
-                this.ctx.lineTo(i * mountainWidth + mountainWidth + 325, 800);
-                this.ctx.lineTo(i * mountainWidth + mountainWidth / 2, 800 - height);
-                this.ctx.lineTo(i * mountainWidth - 325, 800);
-                this.ctx.fillStyle = color;
-                this.ctx.fill();
-            }
-        }
-    }], [{
-        key: 'MOVES',
-        get: function get() {
-            return MOVES;
-        }
-    }]);
-
-    return GameView;
-}();
-
-exports.default = GameView;
-
-/***/ }),
-
-/***/ "./src/index.js":
-/*!**********************!*\
-  !*** ./src/index.js ***!
-  \**********************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var _utils = __webpack_require__(/*! ./utils */ "./src/utils.js");
-
-var _utils2 = _interopRequireDefault(_utils);
-
-var _circle = __webpack_require__(/*! ./circle */ "./src/circle.js");
-
-var _game_view = __webpack_require__(/*! ./game_view */ "./src/game_view.js");
-
-var _game_view2 = _interopRequireDefault(_game_view);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Game = __webpack_require__(/*! ./game */ "./src/game.js");
-
-
-document.addEventListener('DOMContentLoaded', function () {
-    var canvasEl = document.getElementsByTagName("canvas")[0];
-    canvasEl.width = 1200;
-    canvasEl.height = 800;
-
-    var ctx = canvasEl.getContext('2d');
-    var game = new Game();
-    // new GameView(game, ctx).start();
-});
-
-/***/ }),
-
-/***/ "./src/ministar.js":
-/*!*************************!*\
-  !*** ./src/ministar.js ***!
-  \*************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _utils = __webpack_require__(/*! ./utils */ "./src/utils.js");
+var _utils = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
 
 var utils = _interopRequireWildcard(_utils);
 
@@ -495,10 +563,10 @@ exports.default = MiniStar;
 
 /***/ }),
 
-/***/ "./src/star.js":
-/*!*********************!*\
-  !*** ./src/star.js ***!
-  \*********************/
+/***/ "./src/shapes/star.js":
+/*!****************************!*\
+  !*** ./src/shapes/star.js ***!
+  \****************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -511,7 +579,7 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _ministar = __webpack_require__(/*! ./ministar */ "./src/ministar.js");
+var _ministar = __webpack_require__(/*! ./ministar */ "./src/shapes/ministar.js");
 
 var _ministar2 = _interopRequireDefault(_ministar);
 
@@ -592,10 +660,10 @@ exports.default = Star;
 
 /***/ }),
 
-/***/ "./src/utils.js":
-/*!**********************!*\
-  !*** ./src/utils.js ***!
-  \**********************/
+/***/ "./src/utils/utils.js":
+/*!****************************!*\
+  !*** ./src/utils/utils.js ***!
+  \****************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 

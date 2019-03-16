@@ -1,4 +1,4 @@
-import utils from './utils'
+import utils from '../utils/utils';
 import { Circle, generateCircles } from './circle';
 
 const canvas = document.querySelector('canvas');
