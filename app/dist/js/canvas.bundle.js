@@ -360,7 +360,9 @@ var GameView = function () {
                     this.particles.splice(i, 1);
                 }
             }
+            console.log(this.particles.length);
 
+            // console.log(this.particles.length);
             // this.miniStars.forEach((mini, i) => {
             //     mini.update();
             //     if (mini.ttl === 0) {
@@ -369,8 +371,9 @@ var GameView = function () {
             // });
 
             this.ticker++;
-            if (this.ticker % 75 === 0) {
+            if (this.ticker % 195 === 0) {
                 var x = Math.random() * 1200;
+                // caps at about maximum 210-280 at once
                 this.ambientBkg.generate(70);
             }
             // if (this.ticker % 75 === 0) {
@@ -442,7 +445,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var staticCtx = staticCanvas.getContext('2d');
     var animatedCtx = animatedCanvas.getContext('2d');
     var game = new Game();
-    // new GameView(game, staticCtx, animatedCtx).start();
+    new _game_view2.default(game, staticCtx, animatedCtx).start();
 });
 
 /***/ }),
@@ -678,7 +681,7 @@ var Particle = function () {
             y: Math.random() * 3
         };
         // time to live = 100 frames
-        this.ttl = 550;
+        this.ttl = 750;
         this.opacity = 1;
     }
 

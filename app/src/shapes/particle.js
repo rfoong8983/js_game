@@ -14,7 +14,7 @@ class Particle {
             y: Math.random() * 3
         };
         // time to live = 100 frames
-        this.ttl = 550;
+        this.ttl = 750;
         this.opacity = 1;
     }
 

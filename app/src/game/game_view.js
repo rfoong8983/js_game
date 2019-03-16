@@ -73,7 +73,9 @@ class GameView {
                 this.particles.splice(i, 1);
             }
         }
+        console.log(this.particles.length);
 
+        // console.log(this.particles.length);
         // this.miniStars.forEach((mini, i) => {
         //     mini.update();
         //     if (mini.ttl === 0) {
@@ -82,8 +84,9 @@ class GameView {
         // });
 
         this.ticker++;
-        if (this.ticker % 75 === 0) {
+        if (this.ticker % 195 === 0) {
             const x = Math.random() * 1200;
+            // caps at about maximum 210-280 at once
             this.ambientBkg.generate(70);
         }
         // if (this.ticker % 75 === 0) {
