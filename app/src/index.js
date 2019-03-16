@@ -1,15 +1,17 @@
-import utils from './utils'
-import { Circle, generateCircles } from './circle';
-const Game = require("./game");
-import GameView from './game_view';
+const Game = require("./game/game");
+import GameView from './game/game_view';
 
 
 document.addEventListener('DOMContentLoaded', function () {
-    const canvasEl = document.getElementsByTagName("canvas")[0];
-    canvasEl.width = 1200;
-    canvasEl.height = 800;
+    const staticCanvas = document.getElementById("staticCanvas");
+    const animatedCanvas = document.getElementById("animatedCanvas");
+    staticCanvas.width = 1200;
+    staticCanvas.height = 800;
+    animatedCanvas.width = 1200;
+    animatedCanvas.height = 800;
 
-    const ctx = canvasEl.getContext('2d');
+    const staticCtx = staticCanvas.getContext('2d');
+    const animatedCtx = animatedCanvas.getContext('2d');
     const game = new Game();
-    // new GameView(game, ctx).start();
+    // new GameView(game, staticCtx, animatedCtx).start();
 });

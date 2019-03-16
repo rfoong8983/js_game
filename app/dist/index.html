@@ -8,13 +8,10 @@
             margin: 0;
             height: 100%;
             width: 100%;
-            <!-- background: #0e1324; -->
-            background-repeat: no-repeat;
-            background-size: cover;
         }
         canvas {
             border: 1px solid rgb(4, 4, 19);
-            <!-- background: #191f34; -->
+            position: 
         }
         .window {
             margin-top: 12px;
@@ -22,12 +19,25 @@
             justify-content: center;
         }
 
+        #staticCanvas, #animatedCanvas {
+            position: absolute;
+        }
+
+        #staticCanvas {
+            z-index: 0;
+        };
+
+        #animatedCanvas {
+            z-index: 2;
+        }
+
     </style>
 </head>
 <body>
     <div class="window">
-        <canvas class="canvas"></canvas>
-        <script src="canvas.js"></script>
+        <canvas id="staticCanvas"></canvas>
+        <canvas id="animatedCanvas"></canvas>
+        <!-- <script src="canvas.js"></script> -->
     </div>
 <script type="text/javascript" src="./js/canvas.bundle.js"></script></body>
 </html>
