@@ -22,7 +22,7 @@
             align-items: center;
         }
 
-        #staticCanvas, #animatedCanvas {
+        #staticCanvas, #animatedCanvas, #game {
             position: absolute;
             border: 1px solid rgb(4, 4, 19);
             left: 16%;
@@ -37,6 +37,10 @@
             z-index: 0;
         };
 
+        #game {
+            z-index: 1;
+        }
+
     </style>
 </head>
 <body>
@@ -44,6 +48,7 @@
         <div class="centered">
             <canvas id="staticCanvas"></canvas>
             <canvas id="animatedCanvas"></canvas>
+            <canvas id="game"></canvas>
             <!-- <script src="canvas.js"></script> -->
         </div>
     </div>

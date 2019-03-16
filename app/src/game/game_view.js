@@ -2,6 +2,7 @@ import { Circle, generateCircles } from '../shapes/circle.js';
 import Star from '../shapes/star';
 import MiniStar from '../shapes/ministar';
 import Particle from '../shapes/particle';
+import MovingObject from '../entities/moving_object';
 import * as utils from '../utils/utils';
 const GradientBkg = require('../background/gradient_bkgrd');
 const MountainsBkg = require('../background/mountains_bkgrd');
@@ -16,12 +17,14 @@ const MOVES = {
 };
 
 class GameView {
-    constructor(game, staticCtx, animatedCtx, offScreenCtx, animatedCanvas) {
+    constructor(game, staticCtx, animatedCtx, gameCtx, offScreenCtx, animatedCanvas) {
         this.staticCtx = staticCtx;
         this.animatedCtx = animatedCtx;
+        this.gameCtx = gameCtx;
         this.offScreenBkg = offScreenCtx;
         this.preloaded = [];
         this.game = game;
+        this.movingObject = this.game.addMovingObject();
         // this.particles = [];
         
         this.init();
@@ -64,6 +67,8 @@ class GameView {
         this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
         this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26');
 
+        this.displayStaticBkgrd();
+
         this.generateOffScreenParticles();
         // console.log(this.offScreenBkg.particles);
         
@@ -76,14 +81,16 @@ class GameView {
     }
 
     start() {
+        this.lastTime = 0;
         requestAnimationFrame(this.animate.bind(this));
     }
 
     animate(time) {
+        const timeDelta = time - this.lastTime;
         this.animatedCtx.clearRect(0, 0, 1200, 800);
         requestAnimationFrame(this.animate.bind(this));
-        this.displayStaticBkgrd();
         
+        this.game.draw(this.gameCtx);
         // console.log(this.stars);
         // for (let i = 0; i < this.stars.length; i++) {
         //     const star = this.stars[i];

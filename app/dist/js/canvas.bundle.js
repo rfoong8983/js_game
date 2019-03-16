@@ -17299,20 +17299,7 @@ function AmbientBkg(ctx, radius, color, prev) {
     this.prev = [];
 }
 
-AmbientBkg.prototype.generate = function (n) {
-    // this.prev = [];
-    for (var i = 0; i < n; i++) {
-        this.prev.push(new _particle2.default({
-            x: (Math.random() - 0.8) * 1200,
-            y: (Math.random() - 0.8) * 800,
-            radius: this.radius,
-            color: 'rgba(227, 234, 239, 1)',
-            ctx: this.ctx
-        }));
-    }
-};
-
-AmbientBkg.prototype.generate2 = function (preloadedParticles) {
+AmbientBkg.prototype.generate = function (preloadedParticles) {
     this.prev = this.prev.concat(_.cloneDeep(preloadedParticles));
 };
 
@@ -17339,6 +17326,19 @@ AmbientBkg.prototype.update = function () {
 };
 
 module.exports = AmbientBkg;
+
+// AmbientBkg.prototype.generate = function(n) {
+//     // this.prev = [];
+//     for (let i = 0; i < n; i ++) {
+//         this.prev.push(new Particle({
+//             x: (Math.random() - 0.8) * 1200,
+//             y: (Math.random() - 0.8) * 800,
+//             radius: this.radius,
+//             color: `rgba(227, 234, 239, 1)`,
+//             ctx: this.ctx
+//         }));
+//     }
+// };
 
 /***/ }),
 
@@ -17473,6 +17473,55 @@ module.exports = OffScreenCtx;
 
 /***/ }),
 
+/***/ "./src/entities/moving_object.js":
+/*!***************************************!*\
+  !*** ./src/entities/moving_object.js ***!
+  \***************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var utils = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
+
+var MovingObject = function () {
+    function MovingObject(options) {
+        _classCallCheck(this, MovingObject);
+
+        this.pos = options.pos;
+        this.velocity = options.velocity || [0, 0];
+        this.radius = options.radius;
+        this.color = options.color;
+        this.game = options.game;
+    }
+
+    _createClass(MovingObject, [{
+        key: 'draw',
+        value: function draw(ctx) {
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.pos[0], this.pos[1], this.radius, 0, Math.PI * 2, false);
+            ctx.fill();
+            ctx.closePath();
+        }
+    }]);
+
+    return MovingObject;
+}();
+
+exports.default = MovingObject;
+
+/***/ }),
+
 /***/ "./src/game/game.js":
 /*!**************************!*\
   !*** ./src/game/game.js ***!
@@ -17483,8 +17532,54 @@ module.exports = OffScreenCtx;
 "use strict";
 
 
+var _moving_object = __webpack_require__(/*! ../entities/moving_object */ "./src/entities/moving_object.js");
+
+var _moving_object2 = _interopRequireDefault(_moving_object);
+
+var _lodash = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 function Game() {
-    this.test = [];
+    this.players = [];
+    this.movingObjects = [];
+
+    Game.X = 1200;
+    Game.Y = 800;
+    Game.FPS = 32;
+
+    Game.prototype.allEntities = function () {
+        return _.merge(this.players, this.movingObjects);
+    };
+
+    Game.prototype.add = function (object) {
+        if (object.constructor.name === 'MovingObject') {
+            this.movingObjects.push(object);
+        } else {
+            throw new Error("unknown type of object");
+        }
+    };
+
+    Game.prototype.addMovingObject = function () {
+        var movingObject = new _moving_object2.default({
+            pos: [5, 790], // add radius later to acct for object height
+            game: this,
+            velocity: [0, 0],
+            color: 'white',
+            radius: 10
+        });
+
+        this.add(movingObject);
+        return movingObject;
+    };
+
+    Game.prototype.draw = function draw(ctx) {
+        ctx.clearRect(0, 0, Game.X, Game.Y);
+
+        this.allEntities().forEach(function (object) {
+            object.draw(ctx);
+        });
+    };
 }
 
 module.exports = Game;
@@ -17521,6 +17616,10 @@ var _particle = __webpack_require__(/*! ../shapes/particle */ "./src/shapes/part
 
 var _particle2 = _interopRequireDefault(_particle);
 
+var _moving_object = __webpack_require__(/*! ../entities/moving_object */ "./src/entities/moving_object.js");
+
+var _moving_object2 = _interopRequireDefault(_moving_object);
+
 var _utils = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
 
 var utils = _interopRequireWildcard(_utils);
@@ -17543,14 +17642,16 @@ var MOVES = {
 };
 
 var GameView = function () {
-    function GameView(game, staticCtx, animatedCtx, offScreenCtx, animatedCanvas) {
+    function GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx, animatedCanvas) {
         _classCallCheck(this, GameView);
 
         this.staticCtx = staticCtx;
         this.animatedCtx = animatedCtx;
+        this.gameCtx = gameCtx;
         this.offScreenBkg = offScreenCtx;
         this.preloaded = [];
         this.game = game;
+        this.movingObject = this.game.addMovingObject();
         // this.particles = [];
 
         this.init();
@@ -17595,6 +17696,8 @@ var GameView = function () {
             this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
             this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26');
 
+            this.displayStaticBkgrd();
+
             this.generateOffScreenParticles();
             // console.log(this.offScreenBkg.particles);
 
@@ -17608,15 +17711,17 @@ var GameView = function () {
     }, {
         key: 'start',
         value: function start() {
+            this.lastTime = 0;
             requestAnimationFrame(this.animate.bind(this));
         }
     }, {
         key: 'animate',
         value: function animate(time) {
+            var timeDelta = time - this.lastTime;
             this.animatedCtx.clearRect(0, 0, 1200, 800);
             requestAnimationFrame(this.animate.bind(this));
-            this.displayStaticBkgrd();
 
+            this.game.draw(this.gameCtx);
             // console.log(this.stars);
             // for (let i = 0; i < this.stars.length; i++) {
             //     const star = this.stars[i];
@@ -17647,7 +17752,7 @@ var GameView = function () {
             if (this.ticker === 10 || this.ticker % 175 === 0) {
                 var x = Math.random() * 1200;
 
-                this.ambientBkg.generate2(this.preloaded);
+                this.ambientBkg.generate(this.preloaded);
                 console.log(this.ambientBkg.prev);
             }
 
@@ -17720,6 +17825,7 @@ var OffScreenCtx = __webpack_require__(/*! ./background/offscreen_bkgrd */ "./sr
 document.addEventListener('DOMContentLoaded', function () {
     var staticCanvas = document.getElementById('staticCanvas');
     var animatedCanvas = document.getElementById('animatedCanvas');
+    var gameCanvas = document.getElementById('game');
 
     var scWidth = 1200;
     var scHeight = 800;
@@ -17727,23 +17833,18 @@ document.addEventListener('DOMContentLoaded', function () {
     staticCanvas.height = scHeight;
     animatedCanvas.width = scWidth;
     animatedCanvas.height = scHeight;
+    gameCanvas.width = scWidth;
+    gameCanvas.height = scHeight;
 
     var staticCtx = staticCanvas.getContext('2d');
-    var animatedCtx = staticCanvas.getContext('2d');
+    var animatedCtx = animatedCanvas.getContext('2d');
+    var gameCtx = gameCanvas.getContext('2d');
     var offScreenCtx = new OffScreenCtx(staticCanvas.width, staticCanvas.height, 2);
 
     var game = new Game();
-    // new GameView(game, staticCtx, animatedCtx, offScreenCtx).start();
-    new _game_view2.default(game, staticCtx, animatedCtx, offScreenCtx);
+    // new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx).start();
+    new _game_view2.default(game, staticCtx, animatedCtx, gameCtx, offScreenCtx);
 });
-
-var createContext = function createContext(scWidth, scHeight, proportion) {
-    var offScreenCanvas = document.createElement("canvas");
-    offScreenCanvas.width = Math.floor(scWidth / proportion);
-    offScreenCanvas.height = Math.floor(scHeight / proportion);
-
-    return offScreenCanvas.getContext('2d');
-};
 
 /***/ }),
 
