@@ -10,10 +10,16 @@ const AmbientBkg = require('../background/ambient_bkgrd');
 
 
 const KEY_DOWN_MOVES = {
-    87: [0, -3], // 87 w
-    65: [-3, 0], // 65 a
-    83: [0, 3], // 83 s
-    68: [3, 0] // 68 d
+    87: [0, -25], // 87 w
+    65: [-5, 0], // 65 a
+    // 83: [0, 5], // 85 s
+    68: [5, 0] // 68 d
+};
+const KEY_UP_MOVES = {
+    87: [0, 25], // 87 w
+    65: [0, 0], // 65 a
+    // 83: [0, 5], // 85 s
+    68: [0, 0] // 68 d
 };
 
 class GameView {
@@ -25,24 +31,181 @@ class GameView {
         this.preloaded = [];
         this.game = game;
         this.movingObject = this.game.addMovingObject();
+        this.lastJump = new Date() / 1000;
         // this.particles = [];
         this.init();
+        this.keysPressed = this.keysPressed.bind(this);
+        this.keysReleased = this.keysReleased.bind(this);
+        this.bindKeyHandlers = this.bindKeyHandlers.bind(this);
     }
+
+    keysPressed(e) {
+        this.keys[e.keyCode] = true;
+        e.preventDefault();
+        const move = KEY_DOWN_MOVES[e.keyCode];
+        // if (this.keys[87] && this.movingObject.pos[1] < 790) {
+        //     this.movingObject.power([0, 25]);
+        // }
+        // } else if (this.keys[87] && this.keys[68]) {
+        //     if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
+        //         this.movingObject.pos[0] -= 1;
+        //         this.movingObject.power([8, 25]);
+        //     } else {
+        //         this.movingObject.power([8, -25]);
+        //     }
+        // } else if (this.keys[87] && this.keys[65]) {
+        //     if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
+        //         this.movingObject.pos[0] -= 1;
+        //         this.movingObject.power([-8, 25]);
+        //     } else {
+        //         this.movingObject.power([-8, -25]);
+        //     }
+        // } else if (this.keys[87]) {
+        //     if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
+        //         this.movingObject.pos[0] -= 1;
+        //     } else {
+        //         this.movingObject.power(move);
+        //     }
+        // }
+        console.log(this.keys);
+        // console.log(move);
+
+        if (this.keys[87] && this.keys[68]) {
+            if (new Date() / 1000 - this.lastJump > 2) {
+                this.movingObject.jump(2, -25);
+            } else {
+                this.movingObject.jump(2, 25);
+            }
+        } else if (this.keys[87] && this.keys[65]) {
+            if (new Date() / 1000 - this.lastJump > 2) {
+                this.movingObject.jump(-2, -25);
+            } else {
+                this.movingObject.jump(-2, 25);
+            }
+        } else if (this.keys[65]) {
+            this.movingObject.power([-2, 0]);
+        } else if (this.keys[68]) {
+            this.movingObject.power([2, 0]);
+        } else if (this.keys[87]) {
+            console.log(new Date() / 1000 - this.lastJump > 2)
+            if (new Date() / 1000 - this.lastJump > 2) {
+                this.movingObject.jump(0, -25);
+            }
+        } 
+
+
+
+        // if (this.movingObject.pos[1] < 740) {
+        //     this.movingObject.velocity[1] = 25;
+        // } else if (this.keys[87] && this.keys[68]) {
+        //     this.movingObject.power([8, -25]);
+        //     // if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
+        //     //     // this.movingObject.pos[0] -= 1;
+        //     //     this.movingObject.power([8, 25]);
+        //     // } else {
+        //     //     this.movingObject.power([8, -25]);
+        //     // }
+        // } else if (this.keys[87] && this.keys[65]) {
+        //     if (new Date() / 1000 - this.lastJump > 3 && this.movingObject.pos[1] === 790) {
+        //         this.lastJump = new Date() / 1000;
+        //         this.movingObject.power([this.movingObject.velocity[0], -25]);
+        //     }
+        // } else if (this.keys[87]) {
+        //     console.log(this.lastJump, new Date() / 1000);
+        //     if (new Date() / 1000 - this.lastJump > 3) {
+        //         this.lastJump = new Date() / 1000;
+        //         this.movingObject.power([this.movingObject.velocity[0], -25]);
+        //     }
+        // } else if (this.keys[65]) {
+        //     this.movingObject.power([-8,0]);
+        // } else if (this.keys[68]) {
+        //     this.movingObject.power([8,0]);}
+
+
+
+
+
+
+
+        // } else if (this.keys[87] && this.movingObject.pos[1] < 740) {
+        //     this.movingObject.power([this.movingObject.velocity[x], 25]);
+        // }
+
+        console.log(this.movingObject.velocity);
+        // } else if (eDown.which === 87) {
+        //     this.movingObject.power([0, -25]);
+        // } else if (movingObject.velocity[0] > 0) {
+        //     this.movingObject.power([5, 25]);
+        // } else if (movingObject.velocity[0] < 0) {
+        //     this.movingObject.power([-5, 25]);
+        // }
+    }
+
+    keysReleased(e) {
+        this.keys[e.keyCode] = false;
+        const move = KEY_UP_MOVES[e.keyCode];
+        this.movingObject.power(move);
+        // if (this.keys[87] && this.keys[68]) {
+        //     this.movingObject.power([8, -25]);
+        //     // if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
+        //     //     // this.movingObject.pos[0] -= 1;
+        //     //     this.movingObject.power([8, 25]);
+        //     // } else {
+        //     //     this.movingObject.power([8, -25]);
+        //     // }
+        // } else if (this.keys[87] && this.keys[65]) {
+        //     this.movingObject.power([-8, -25]);
+        // } else if (this.keys[87]) {
+        //     this.movingObject.power([this.movingObject.velocity[0], -25]);
+        // } else if (this.keys[65]) {
+        //     this.movingObject.power([-8, 0]);
+        // } else if (this.keys[68]) {
+        //     this.movingObject.power([8, 0]);
+        // }
+    }
+    
 
     bindKeyHandlers() {
         const movingObject = this.movingObject;
 
-        document.addEventListener('keydown', (e) => {
-            const move = KEY_DOWN_MOVES[JSON.stringify(e.which)];
-            console.log(movingObject.velocity);
-            movingObject.power(move);
-        });
+        document.addEventListener('keydown', this.keysPressed, false);
+
+        document.addEventListener('keyup', this.keysReleased, false);
         
-        document.addEventListener('keyup', (e) => {
+        
+    }
+    bindKeyHandlers2() {
+        const movingObject = this.movingObject;
+
+        document.addEventListener('keydown', (eDown) => {
+            const move = KEY_DOWN_MOVES[JSON.stringify(eDown.which)];
+            // console.log(movingObject.velocity);
+            if (eDown.which !== 87) {
+                movingObject.power(move);
+            } else if (movingObject.pos[1] === 790 && eDown.which === 87) {
+                movingObject.power(move);
+            // } else if (movingObject.pos[1] < 741 && eDown.which === 87) {
+            //     movingObject.power([0, 0]);
+            } else if (eDown.which === 87) {
+                movingObject.power([0, -25]);
+            } else if (movingObject.velocity[0] > 0) {
+                movingObject.power([5, 25]);
+            } else if (movingObject.velocity[0] < 0) {
+                movingObject.power([-5, 25]);
+            }
+        });
+
+        document.addEventListener('keyup', (eUp) => {
             // console.log(e)
             console.log(movingObject.velocity);
-            movingObject.power([0,0]);
+            if (eUp === 87) {
+                movingObject.power([0, 25]);
+            } else {
+                movingObject.power([0, 0]);
+            }
         });
+        
+        
     }
 
     // move gradients and static images out of animation
@@ -83,7 +246,7 @@ class GameView {
         this.generateOffScreenParticles();
         // console.log(this.offScreenBkg.particles);
         
-        this.stars = [];
+        this.keys = [];
         // this.miniStars is being changed
         // by star #shatter method
         this.miniStars = [];
