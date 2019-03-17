@@ -1,4 +1,5 @@
 import MovingObject from '../entities/moving_object';
+import utils from '../utils/utils';
 import { merge } from 'lodash';
 
 const X = 1200;
@@ -9,11 +10,11 @@ class Game {
     constructor() {
         this.stars = [];
         this.movingObjects = [];
+        this.gameOver = false;
     }
 
     allEntities () {
-        const merged = _.merge(this.stars, this.movingObjects);
-        return merged;
+        return [].concat(this.stars, this.movingObjects);
     }
 
     add (object) {
@@ -33,14 +34,20 @@ class Game {
             for (let j = 0; j < all.length; j++) {
                 const obj1 = all[i];
                 const obj2 = all[j];
-
-                if (i === j) {
-                    continue;
-                }
+                // console.log(utils.distance(obj1.pos[0], obj1.pos[1], obj2.pos[0], obj2.pos[1]));
+                // console.log(obj1,obj2)
+                // if (i === j) {
+                //     continue;
+                // }
                 if (obj1.isCollidedWith(obj2)) {
                     const collision = obj1.isCollidedWith(obj2);
                     if (collision) {
-                        console.log(collision);
+                        if (i !== j && all[i].constructor.name !== all[j].constructor.name) {
+                            // console.log(obj1) => star
+                            obj1.handleCollision();
+                            this.gameOver = true;
+                            // obj2.handleCollision();
+                        }
                         return;
                     }
                 }
@@ -48,13 +55,14 @@ class Game {
         }
     }
 
+
     addMovingObject () {
         const movingObject = new MovingObject({
             pos: [10, 790], // add radius later to acct for object height
             game: this,
             velocity: [0, 0],
             color: 'white',
-            radius: 10
+            radius: 2
         });
 
         this.add(movingObject);
@@ -66,6 +74,7 @@ class Game {
         // console.log(this.stars);
         // console.log(this.allEntities());
         this.add(star);
+        // console.log(this.stars);
         return star;
     }
 

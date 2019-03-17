@@ -177,83 +177,92 @@ class GameView {
         requestAnimationFrame(this.animate.bind(this));
     }
 
+    stop() {
+        cancelAnimationFrame(this.animate.bind(this));
+    }
+
     animate(time) {
-        const timeDelta = time - this.lastTime;
-        this.animatedCtx.clearRect(0, 0, 1200, 800);
-        requestAnimationFrame(this.animate.bind(this));
-        
-        this.game.step(timeDelta);
-        this.game.draw(this.gameCtx);
-        // console.log(this.stars);
-        for (let i = 0; i < this.stars.length; i++) {
-            const star = this.stars[i];
-            this.stars[i].update();
-            if (this.stars[i].radius <= 0 ) {
-                this.stars.splice(i, 1);
-            }
-        }
-
-        
-
-
-        for (let i = 0; i < this.ambientBkg.prev.length; i++) {
-            // console.log(this.ambientBkg.prev[i]);
-            this.ambientBkg.prev[i].update();
-            // console.log(this.ambientBkg.prev);
-            if (this.ambientBkg.prev[i].ttl === 0 ) {
-                this.ambientBkg.prev.splice(i, 1);
+        if (this.game.gameOver) {
+            console.log(this.game.gameOver);
+            this.stop();
+        } else {
+            const timeDelta = time - this.lastTime;
+            this.animatedCtx.clearRect(0, 0, 1200, 800);
+            requestAnimationFrame(this.animate.bind(this));
+            
+            this.game.step(timeDelta);
+            this.game.draw(this.gameCtx);
+            // console.log(this.stars);
+            for (let i = 0; i < this.stars.length; i++) {
+                const star = this.stars[i];
+                this.stars[i].update();
+                if (this.stars[i].radius <= 0 ) {
+                    this.stars.splice(i, 1);
+                }
             }
 
             
-        }
-        
-        this.miniStars.forEach((mini, i) => {
-            mini.update();
-            if (mini.ttl === 0) {
-                this.miniStars.splice(i, 1);
-            }
-        });
 
-            //  ###############   COMMENT ME BBACK IN !!!!
-        // this.ticker++;
-        // if (this.ticker === 10 || this.ticker % 175 === 0) {
-        //     const x = Math.random() * 1200;
 
-        //     this.ambientBkg.generate(this.preloaded);
-        //     console.log(this.ambientBkg.prev);
-        // }
-        
-        this.ticker++;
-        // if (this.ticker % 195 === 0) {
-        //     const x = Math.random() * 1200;
-        //     // caps at about maximum 210-280 at once
-        //     this.ambientBkg.generate(70);
-        // }
-        
-        // delete stars that have shrunk
-        this.stars.forEach((star, index) => {
-            if (star.radius - 3 <= 0) {
-                this.stars.splice(index, 1);
-            }
-        });
-        this.game.stars.forEach((star, index) => {
-            // console.log(this.game.stars);
-            if (star.radius - 3 <= 0) {
-                this.game.stars.splice(index, 1);
-            }
-        });
+            for (let i = 0; i < this.ambientBkg.prev.length; i++) {
+                // console.log(this.ambientBkg.prev[i]);
+                this.ambientBkg.prev[i].update();
+                // console.log(this.ambientBkg.prev);
+                if (this.ambientBkg.prev[i].ttl === 0 ) {
+                    this.ambientBkg.prev.splice(i, 1);
+                }
 
-        if (this.ticker % 175 === 0) {
-            const x = Math.random() * 1200;
-            const star = new Star({
-                x: 40, y: -100, radius: 8,
-                color: 'white', ctx: this.animatedCtx,
-                miniStars: this.miniStars
+                
+            }
+            
+            this.miniStars.forEach((mini, i) => {
+                mini.update();
+                if (mini.ttl === 0) {
+                    this.miniStars.splice(i, 1);
+                }
             });
-            this.stars.push(star);
-            this.game.addStar(star);
-            // console.log(this.stars);
-            // console.log(this.miniStars);
+
+                //  ###############   COMMENT ME BBACK IN !!!!
+                // ###### MOVING BKG
+            if (this.ticker === 10 || this.ticker % 175 === 0) {
+                const x = Math.random() * 1200;
+
+                this.ambientBkg.generate(this.preloaded);
+                // console.log(this.ambientBkg.prev);
+            }
+            
+            this.ticker++;
+            // if (this.ticker % 195 === 0) {
+            //     const x = Math.random() * 1200;
+            //     // caps at about maximum 210-280 at once
+            //     this.ambientBkg.generate(70);
+            // }
+            
+            // delete stars that have shrunk
+            this.stars.forEach((star, index) => {
+                if (star.radius - 3 <= 0) {
+                    this.stars.splice(index, 1);
+                }
+            });
+            this.game.stars.forEach((star, index) => {
+                // console.log(this.game.stars);
+                if (star.radius - 3 <= 0) {
+                    this.game.stars.splice(index, 1);
+                }
+            });
+
+            if (this.ticker % 155 === 0) {
+                const x = Math.random() * 1200;
+                const star = new Star({
+                    x, y: -100, radius: 14, // 8,
+                    color: 'white', ctx: this.animatedCtx,
+                    miniStars: this.miniStars
+                });
+                this.stars.push(star);
+                this.game.addStar(star);
+                // console.log(this.stars);
+                // console.log(this.miniStars);
+            }
         }
     }
 }

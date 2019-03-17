@@ -12,18 +12,25 @@ class Star {
         this.gravity = 1;
         this.friction = 0.8;
         this.velocity = {
-            x: 0,
-            // x: utils.randomIntFromRange(-10, 10),
+            // x: 0,
+            x: utils.randomIntFromRange(-15, 15),
             y: 3
         };
         this.miniStars = options.miniStars;
         this.opacity = 1;
     }
 
+    handleCollision() {
+        this.velocity.x = utils.randomIntFromRange(-25, 25);
+        this.velocity.y = utils.randomIntFromRange(0, 45);
+    }
+
     isCollidedWith(obj2) {
         const dist = utils.distance(this.x, this.y, obj2.pos[0], obj2.pos[1]);
-        if (dist < this.radius + obj2.radius) {
-            console.log(dist < this.radius +15 + obj2.radius);
+        // console.log(dist);
+        // add + 10 for player height
+        if (dist <= 10 + this.radius + obj2.radius) {
+            // console.log(this.radius + obj2.radius);
             return true;
         }
 
@@ -32,6 +39,7 @@ class Star {
 
     shatter(arr) {
         this.radius -= 3;
+        // add back in for particles
         for (let i = 0; i < 5; i++) {
             arr.push(new MiniStar({
                 x: this.x,

@@ -14,10 +14,19 @@ class MovingObject {
         this.gravity = 10;
     }
 
+    handleCollision() {
+        // this.velocity.y = utils.randomIntFromRange(1, 15);
+    }
+
     isCollidedWith (obj2) {
         const dist = utils.distance(this.pos[0], this.pos[1], obj2.x, obj2.y);
-        if (dist < this.radius + obj2.radius) {
-            console.log(dist < this.radius + 15 + obj2.radius);
+        
+        
+        if (dist <= this.radius + obj2.radius) {
+            // console.log(dist < this.radius + 15 + obj2.radius);
+            // console.log(Math.round(dist));
+            // console.log(Math.round(this.radius) + Math.floor(obj2.radius));
+            // console.log(dist < this.radius + Math.floor(obj2.radius));
             return true;
         }
 
@@ -49,10 +58,14 @@ class MovingObject {
             this.velocity[0] = 0;
             this.pos[0] = this.radius;
         }
-        ctx.ellipse(this.pos[0], this.pos[1], 2, 9, 0, Math.PI * 2, false);
+        ctx.ellipse(this.pos[0], this.pos[1], this.radius, this.radius * 9, 0, Math.PI * 2, false);
         ctx.ellipse(
-            this.pos[0], this.pos[1] - 16, 3, 2, 0, Math.PI * 2, false
+            this.pos[0], this.pos[1] - 26, this.radius * 2.5, this.radius * 2, 0, Math.PI * 2, false
         );
+        // ctx.ellipse(this.pos[0], this.pos[1], 2, 9, 0, Math.PI * 2, false);
+        // ctx.ellipse(
+        //     this.pos[0], this.pos[1] - 16, 3, 2, 0, Math.PI * 2, false
+        // );
         ctx.closePath();
         ctx.fill();
     }

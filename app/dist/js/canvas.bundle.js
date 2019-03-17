@@ -17510,11 +17510,20 @@ var MovingObject = function () {
     }
 
     _createClass(MovingObject, [{
+        key: 'handleCollision',
+        value: function handleCollision() {
+            // this.velocity.y = utils.randomIntFromRange(1, 15);
+        }
+    }, {
         key: 'isCollidedWith',
         value: function isCollidedWith(obj2) {
             var dist = utils.distance(this.pos[0], this.pos[1], obj2.x, obj2.y);
-            if (dist < this.radius + obj2.radius) {
-                console.log(dist < this.radius + 15 + obj2.radius);
+
+            if (dist <= this.radius + obj2.radius) {
+                // console.log(dist < this.radius + 15 + obj2.radius);
+                // console.log(Math.round(dist));
+                // console.log(Math.round(this.radius) + Math.floor(obj2.radius));
+                // console.log(dist < this.radius + Math.floor(obj2.radius));
                 return true;
             }
 
@@ -17548,8 +17557,12 @@ var MovingObject = function () {
                 this.velocity[0] = 0;
                 this.pos[0] = this.radius;
             }
-            ctx.ellipse(this.pos[0], this.pos[1], 2, 9, 0, Math.PI * 2, false);
-            ctx.ellipse(this.pos[0], this.pos[1] - 16, 3, 2, 0, Math.PI * 2, false);
+            ctx.ellipse(this.pos[0], this.pos[1], this.radius, this.radius * 9, 0, Math.PI * 2, false);
+            ctx.ellipse(this.pos[0], this.pos[1] - 26, this.radius * 2.5, this.radius * 2, 0, Math.PI * 2, false);
+            // ctx.ellipse(this.pos[0], this.pos[1], 2, 9, 0, Math.PI * 2, false);
+            // ctx.ellipse(
+            //     this.pos[0], this.pos[1] - 16, 3, 2, 0, Math.PI * 2, false
+            // );
             ctx.closePath();
             ctx.fill();
         }
@@ -17604,6 +17617,10 @@ var _moving_object = __webpack_require__(/*! ../entities/moving_object */ "./src
 
 var _moving_object2 = _interopRequireDefault(_moving_object);
 
+var _utils = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
+
+var _utils2 = _interopRequireDefault(_utils);
+
 var _lodash = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -17620,13 +17637,13 @@ var Game = function () {
 
         this.stars = [];
         this.movingObjects = [];
+        this.gameOver = false;
     }
 
     _createClass(Game, [{
         key: 'allEntities',
         value: function allEntities() {
-            var merged = _.merge(this.stars, this.movingObjects);
-            return merged;
+            return [].concat(this.stars, this.movingObjects);
         }
     }, {
         key: 'add',
@@ -17647,14 +17664,20 @@ var Game = function () {
                 for (var j = 0; j < all.length; j++) {
                     var obj1 = all[i];
                     var obj2 = all[j];
-
-                    if (i === j) {
-                        continue;
-                    }
+                    // console.log(utils.distance(obj1.pos[0], obj1.pos[1], obj2.pos[0], obj2.pos[1]));
+                    // console.log(obj1,obj2)
+                    // if (i === j) {
+                    //     continue;
+                    // }
                     if (obj1.isCollidedWith(obj2)) {
                         var collision = obj1.isCollidedWith(obj2);
                         if (collision) {
-                            console.log(collision);
+                            if (i !== j && all[i].constructor.name !== all[j].constructor.name) {
+                                // console.log(obj1) => star
+                                obj1.handleCollision();
+                                this.gameOver = true;
+                                // obj2.handleCollision();
+                            }
                             return;
                         }
                     }
@@ -17669,7 +17692,7 @@ var Game = function () {
                 game: this,
                 velocity: [0, 0],
                 color: 'white',
-                radius: 10
+                radius: 2
             });
 
             this.add(movingObject);
@@ -17682,6 +17705,7 @@ var Game = function () {
             // console.log(this.stars);
             // console.log(this.allEntities());
             this.add(star);
+            // console.log(this.stars);
             return star;
         }
     }, {
@@ -17942,81 +17966,91 @@ var GameView = function () {
             requestAnimationFrame(this.animate.bind(this));
         }
     }, {
+        key: 'stop',
+        value: function stop() {
+            cancelAnimationFrame(this.animate.bind(this));
+        }
+    }, {
         key: 'animate',
         value: function animate(time) {
             var _this = this;
 
-            var timeDelta = time - this.lastTime;
-            this.animatedCtx.clearRect(0, 0, 1200, 800);
-            requestAnimationFrame(this.animate.bind(this));
+            if (this.game.gameOver) {
+                console.log(this.game.gameOver);
+                this.stop();
+            } else {
+                var timeDelta = time - this.lastTime;
+                this.animatedCtx.clearRect(0, 0, 1200, 800);
+                requestAnimationFrame(this.animate.bind(this));
 
-            this.game.step(timeDelta);
-            this.game.draw(this.gameCtx);
-            // console.log(this.stars);
-            for (var i = 0; i < this.stars.length; i++) {
-                var star = this.stars[i];
-                this.stars[i].update();
-                if (this.stars[i].radius <= 0) {
-                    this.stars.splice(i, 1);
-                }
-            }
-
-            for (var _i = 0; _i < this.ambientBkg.prev.length; _i++) {
-                // console.log(this.ambientBkg.prev[i]);
-                this.ambientBkg.prev[_i].update();
-                // console.log(this.ambientBkg.prev);
-                if (this.ambientBkg.prev[_i].ttl === 0) {
-                    this.ambientBkg.prev.splice(_i, 1);
-                }
-            }
-
-            this.miniStars.forEach(function (mini, i) {
-                mini.update();
-                if (mini.ttl === 0) {
-                    _this.miniStars.splice(i, 1);
-                }
-            });
-
-            //  ###############   COMMENT ME BBACK IN !!!!
-            // this.ticker++;
-            // if (this.ticker === 10 || this.ticker % 175 === 0) {
-            //     const x = Math.random() * 1200;
-
-            //     this.ambientBkg.generate(this.preloaded);
-            //     console.log(this.ambientBkg.prev);
-            // }
-
-            this.ticker++;
-            // if (this.ticker % 195 === 0) {
-            //     const x = Math.random() * 1200;
-            //     // caps at about maximum 210-280 at once
-            //     this.ambientBkg.generate(70);
-            // }
-
-            // delete stars that have shrunk
-            this.stars.forEach(function (star, index) {
-                if (star.radius - 3 <= 0) {
-                    _this.stars.splice(index, 1);
-                }
-            });
-            this.game.stars.forEach(function (star, index) {
-                // console.log(this.game.stars);
-                if (star.radius - 3 <= 0) {
-                    _this.game.stars.splice(index, 1);
-                }
-            });
-
-            if (this.ticker % 175 === 0) {
-                var x = Math.random() * 1200;
-                var _star = new _star3.default({
-                    x: 40, y: -100, radius: 8,
-                    color: 'white', ctx: this.animatedCtx,
-                    miniStars: this.miniStars
-                });
-                this.stars.push(_star);
-                this.game.addStar(_star);
+                this.game.step(timeDelta);
+                this.game.draw(this.gameCtx);
                 // console.log(this.stars);
-                // console.log(this.miniStars);
+                for (var i = 0; i < this.stars.length; i++) {
+                    var star = this.stars[i];
+                    this.stars[i].update();
+                    if (this.stars[i].radius <= 0) {
+                        this.stars.splice(i, 1);
+                    }
+                }
+
+                for (var _i = 0; _i < this.ambientBkg.prev.length; _i++) {
+                    // console.log(this.ambientBkg.prev[i]);
+                    this.ambientBkg.prev[_i].update();
+                    // console.log(this.ambientBkg.prev);
+                    if (this.ambientBkg.prev[_i].ttl === 0) {
+                        this.ambientBkg.prev.splice(_i, 1);
+                    }
+                }
+
+                this.miniStars.forEach(function (mini, i) {
+                    mini.update();
+                    if (mini.ttl === 0) {
+                        _this.miniStars.splice(i, 1);
+                    }
+                });
+
+                //  ###############   COMMENT ME BBACK IN !!!!
+                // ###### MOVING BKG
+                if (this.ticker === 10 || this.ticker % 175 === 0) {
+                    var x = Math.random() * 1200;
+
+                    this.ambientBkg.generate(this.preloaded);
+                    console.log(this.ambientBkg.prev);
+                }
+
+                this.ticker++;
+                // if (this.ticker % 195 === 0) {
+                //     const x = Math.random() * 1200;
+                //     // caps at about maximum 210-280 at once
+                //     this.ambientBkg.generate(70);
+                // }
+
+                // delete stars that have shrunk
+                this.stars.forEach(function (star, index) {
+                    if (star.radius - 3 <= 0) {
+                        _this.stars.splice(index, 1);
+                    }
+                });
+                this.game.stars.forEach(function (star, index) {
+                    // console.log(this.game.stars);
+                    if (star.radius - 3 <= 0) {
+                        _this.game.stars.splice(index, 1);
+                    }
+                });
+
+                if (this.ticker % 155 === 0) {
+                    var _x = Math.random() * 1200;
+                    var _star = new _star3.default({
+                        x: _x, y: -100, radius: 14, // 8,
+                        color: 'white', ctx: this.animatedCtx,
+                        miniStars: this.miniStars
+                    });
+                    this.stars.push(_star);
+                    this.game.addStar(_star);
+                    // console.log(this.stars);
+                    // console.log(this.miniStars);
+                }
             }
         }
     }]);
@@ -18424,8 +18458,8 @@ var Star = function () {
         this.gravity = 1;
         this.friction = 0.8;
         this.velocity = {
-            x: 0,
-            // x: utils.randomIntFromRange(-10, 10),
+            // x: 0,
+            x: utils.randomIntFromRange(-15, 15),
             y: 3
         };
         this.miniStars = options.miniStars;
@@ -18433,11 +18467,19 @@ var Star = function () {
     }
 
     _createClass(Star, [{
+        key: 'handleCollision',
+        value: function handleCollision() {
+            this.velocity.x = utils.randomIntFromRange(-25, 25);
+            this.velocity.y = utils.randomIntFromRange(0, 45);
+        }
+    }, {
         key: 'isCollidedWith',
         value: function isCollidedWith(obj2) {
             var dist = utils.distance(this.x, this.y, obj2.pos[0], obj2.pos[1]);
-            if (dist < this.radius + obj2.radius) {
-                console.log(dist < this.radius + 15 + obj2.radius);
+            // console.log(dist);
+            // add + 10 for player height
+            if (dist <= 10 + this.radius + obj2.radius) {
+                // console.log(this.radius + obj2.radius);
                 return true;
             }
 
@@ -18447,6 +18489,7 @@ var Star = function () {
         key: 'shatter',
         value: function shatter(arr) {
             this.radius -= 3;
+            // add back in for particles
             for (var i = 0; i < 5; i++) {
                 arr.push(new _ministar2.default({
                     x: this.x,
