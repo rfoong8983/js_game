@@ -43,32 +43,10 @@ class GameView {
         this.keys[e.keyCode] = true;
         e.preventDefault();
         const move = KEY_DOWN_MOVES[e.keyCode];
-        // if (this.keys[87] && this.movingObject.pos[1] < 790) {
-        //     this.movingObject.power([0, 25]);
-        // }
-        // } else if (this.keys[87] && this.keys[68]) {
-        //     if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
-        //         this.movingObject.pos[0] -= 1;
-        //         this.movingObject.power([8, 25]);
-        //     } else {
-        //         this.movingObject.power([8, -25]);
-        //     }
-        // } else if (this.keys[87] && this.keys[65]) {
-        //     if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
-        //         this.movingObject.pos[0] -= 1;
-        //         this.movingObject.power([-8, 25]);
-        //     } else {
-        //         this.movingObject.power([-8, -25]);
-        //     }
-        // } else if (this.keys[87]) {
-        //     if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
-        //         this.movingObject.pos[0] -= 1;
-        //     } else {
-        //         this.movingObject.power(move);
-        //     }
-        // }
-        console.log(this.keys);
-        // console.log(move);
+        
+        // console.log(this.keys);
+
+        // write a jump function
 
         if (this.keys[87] && this.keys[68]) {
             if (new Date() / 1000 - this.lastJump > 2) {
@@ -87,81 +65,18 @@ class GameView {
         } else if (this.keys[68]) {
             this.movingObject.power([2, 0]);
         } else if (this.keys[87]) {
-            console.log(new Date() / 1000 - this.lastJump > 2)
             if (new Date() / 1000 - this.lastJump > 2) {
                 this.movingObject.jump(0, -25);
             }
         } 
 
-
-
-        // if (this.movingObject.pos[1] < 740) {
-        //     this.movingObject.velocity[1] = 25;
-        // } else if (this.keys[87] && this.keys[68]) {
-        //     this.movingObject.power([8, -25]);
-        //     // if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
-        //     //     // this.movingObject.pos[0] -= 1;
-        //     //     this.movingObject.power([8, 25]);
-        //     // } else {
-        //     //     this.movingObject.power([8, -25]);
-        //     // }
-        // } else if (this.keys[87] && this.keys[65]) {
-        //     if (new Date() / 1000 - this.lastJump > 3 && this.movingObject.pos[1] === 790) {
-        //         this.lastJump = new Date() / 1000;
-        //         this.movingObject.power([this.movingObject.velocity[0], -25]);
-        //     }
-        // } else if (this.keys[87]) {
-        //     console.log(this.lastJump, new Date() / 1000);
-        //     if (new Date() / 1000 - this.lastJump > 3) {
-        //         this.lastJump = new Date() / 1000;
-        //         this.movingObject.power([this.movingObject.velocity[0], -25]);
-        //     }
-        // } else if (this.keys[65]) {
-        //     this.movingObject.power([-8,0]);
-        // } else if (this.keys[68]) {
-        //     this.movingObject.power([8,0]);}
-
-
-
-
-
-
-
-        // } else if (this.keys[87] && this.movingObject.pos[1] < 740) {
-        //     this.movingObject.power([this.movingObject.velocity[x], 25]);
-        // }
-
-        console.log(this.movingObject.velocity);
-        // } else if (eDown.which === 87) {
-        //     this.movingObject.power([0, -25]);
-        // } else if (movingObject.velocity[0] > 0) {
-        //     this.movingObject.power([5, 25]);
-        // } else if (movingObject.velocity[0] < 0) {
-        //     this.movingObject.power([-5, 25]);
-        // }
+        // console.log(this.movingObject.velocity);
     }
 
     keysReleased(e) {
         this.keys[e.keyCode] = false;
         const move = KEY_UP_MOVES[e.keyCode];
         this.movingObject.power(move);
-        // if (this.keys[87] && this.keys[68]) {
-        //     this.movingObject.power([8, -25]);
-        //     // if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
-        //     //     // this.movingObject.pos[0] -= 1;
-        //     //     this.movingObject.power([8, 25]);
-        //     // } else {
-        //     //     this.movingObject.power([8, -25]);
-        //     // }
-        // } else if (this.keys[87] && this.keys[65]) {
-        //     this.movingObject.power([-8, -25]);
-        // } else if (this.keys[87]) {
-        //     this.movingObject.power([this.movingObject.velocity[0], -25]);
-        // } else if (this.keys[65]) {
-        //     this.movingObject.power([-8, 0]);
-        // } else if (this.keys[68]) {
-        //     this.movingObject.power([8, 0]);
-        // }
     }
     
 
@@ -197,7 +112,7 @@ class GameView {
 
         document.addEventListener('keyup', (eUp) => {
             // console.log(e)
-            console.log(movingObject.velocity);
+            // console.log(movingObject.velocity);
             if (eUp === 87) {
                 movingObject.power([0, 25]);
             } else {
@@ -235,6 +150,7 @@ class GameView {
     }
 
     init() {
+        // this.gradBkg = new GradientBkg(this.staticCtx, '#0a384a', '#024253');
         this.gradBkg = new GradientBkg(this.staticCtx, '#171e26', '#3f586b');
         this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
         this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
@@ -251,6 +167,7 @@ class GameView {
         // by star #shatter method
         this.miniStars = [];
         this.backgroundStars = [];
+        this.stars = [];
         this.ticker = 0;
     }
 
@@ -268,13 +185,13 @@ class GameView {
         this.game.step(timeDelta);
         this.game.draw(this.gameCtx);
         // console.log(this.stars);
-        // for (let i = 0; i < this.stars.length; i++) {
-        //     const star = this.stars[i];
-        //     this.stars[i].update();
-        //     if (this.stars[i].radius === 0 ) {
-        //         this.stars.splice(i, 1);
-        //     }
-        // }
+        for (let i = 0; i < this.stars.length; i++) {
+            const star = this.stars[i];
+            this.stars[i].update();
+            if (this.stars[i].radius <= 0 ) {
+                this.stars.splice(i, 1);
+            }
+        }
 
         
 
@@ -290,14 +207,14 @@ class GameView {
             
         }
         
-        // this.miniStars.forEach((mini, i) => {
-        //     mini.update();
-        //     if (mini.ttl === 0) {
-        //         this.miniStars.splice(i, 1);
-        //     }
-        // });
+        this.miniStars.forEach((mini, i) => {
+            mini.update();
+            if (mini.ttl === 0) {
+                this.miniStars.splice(i, 1);
+            }
+        });
 
-        //      ###############   COMMENT ME BBACK IN !!!!
+            //  ###############   COMMENT ME BBACK IN !!!!
         // this.ticker++;
         // if (this.ticker === 10 || this.ticker % 175 === 0) {
         //     const x = Math.random() * 1200;
@@ -306,35 +223,37 @@ class GameView {
         //     console.log(this.ambientBkg.prev);
         // }
         
-        // this.ticker++;
+        this.ticker++;
         // if (this.ticker % 195 === 0) {
         //     const x = Math.random() * 1200;
         //     // caps at about maximum 210-280 at once
         //     this.ambientBkg.generate(70);
         // }
-        // console.log(this.prev.length);
-        // if (this.ticker % 75 === 0) {
-        //     const x = Math.random() * 1200;
-        //     this.stars.push(new Star({
-        //         x, y: -100, radius: 30, 
-        //         color: 'white', ctx: this.animatedCtx, 
-        //         miniStars: this.miniStars
-        //     }));
-        // }
-    }
+        
+        // delete stars that have shrunk
+        this.stars.forEach((star, index) => {
+            if (star.radius - 3 <= 0) {
+                this.stars.splice(index, 1);
+            }
+        });
+        this.game.stars.forEach((star, index) => {
+            // console.log(this.game.stars);
+            if (star.radius - 3 <= 0) {
+                this.game.stars.splice(index, 1);
+            }
+        });
 
-    createMountainRange(mountainAmount, height, color) {
-        // canvas - height = distance from top of screen
-        for (let i = 0; i < mountainAmount; i++) {
-            const mountainWidth = 1200 / mountainAmount;
-            
-            this.animatedCtx.beginPath();
-            this.animatedCtx.moveTo(i * mountainWidth, 800);
-            this.animatedCtx.lineTo(i * mountainWidth + mountainWidth + 325, 800);
-            this.animatedCtx.lineTo(i * mountainWidth + mountainWidth / 2, 800 - height);
-            this.animatedCtx.lineTo(i * mountainWidth - 325, 800);
-            this.animatedCtx.fillStyle = color;
-            this.animatedCtx.fill();
+        if (this.ticker % 175 === 0) {
+            const x = Math.random() * 1200;
+            const star = new Star({
+                x: 40, y: -100, radius: 8,
+                color: 'white', ctx: this.animatedCtx,
+                miniStars: this.miniStars
+            });
+            this.stars.push(star);
+            this.game.addStar(star);
+            // console.log(this.stars);
+            // console.log(this.miniStars);
         }
     }
 }

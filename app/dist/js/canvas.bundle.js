@@ -17500,6 +17500,8 @@ var MovingObject = function () {
         _classCallCheck(this, MovingObject);
 
         this.pos = options.pos;
+        this.x = this.pos[0];
+        this.y = this.pos[1];
         this.velocity = options.velocity || [0, 0];
         this.radius = options.radius;
         this.color = options.color;
@@ -17508,6 +17510,17 @@ var MovingObject = function () {
     }
 
     _createClass(MovingObject, [{
+        key: 'isCollidedWith',
+        value: function isCollidedWith(obj2) {
+            var dist = utils.distance(this.pos[0], this.pos[1], obj2.x, obj2.y);
+            if (dist < this.radius + obj2.radius) {
+                console.log(dist < this.radius + 15 + obj2.radius);
+                return true;
+            }
+
+            return false;
+        }
+    }, {
         key: 'jump',
         value: function jump(x, y) {
             if (this.pos[1] < 740) {
@@ -17605,22 +17618,47 @@ var Game = function () {
     function Game() {
         _classCallCheck(this, Game);
 
-        this.players = [];
+        this.stars = [];
         this.movingObjects = [];
     }
 
     _createClass(Game, [{
         key: 'allEntities',
         value: function allEntities() {
-            return _.merge(this.players, this.movingObjects);
+            var merged = _.merge(this.stars, this.movingObjects);
+            return merged;
         }
     }, {
         key: 'add',
         value: function add(object) {
             if (object.constructor.name === 'MovingObject') {
                 this.movingObjects.push(object);
+            } else if (object.constructor.name === 'Star') {
+                this.stars.push(object);
             } else {
                 throw new Error("unknown type of object");
+            }
+        }
+    }, {
+        key: 'checkCollisions',
+        value: function checkCollisions() {
+            var all = this.allEntities();
+            for (var i = 0; i < all.length; i++) {
+                for (var j = 0; j < all.length; j++) {
+                    var obj1 = all[i];
+                    var obj2 = all[j];
+
+                    if (i === j) {
+                        continue;
+                    }
+                    if (obj1.isCollidedWith(obj2)) {
+                        var collision = obj1.isCollidedWith(obj2);
+                        if (collision) {
+                            console.log(collision);
+                            return;
+                        }
+                    }
+                }
             }
         }
     }, {
@@ -17638,16 +17676,28 @@ var Game = function () {
             return movingObject;
         }
     }, {
+        key: 'addStar',
+        value: function addStar(star) {
+            // console.log(this.movingObjects);
+            // console.log(this.stars);
+            // console.log(this.allEntities());
+            this.add(star);
+            return star;
+        }
+    }, {
         key: 'moveObjects',
         value: function moveObjects(delta) {
             this.allEntities().forEach(function (object) {
-                object.move(delta);
+                if (object.constructor.name !== 'Star') {
+                    object.move(delta);
+                }
             });
         }
     }, {
         key: 'step',
         value: function step(delta) {
             this.moveObjects(delta);
+            this.checkCollisions();
         }
     }, {
         key: 'draw',
@@ -17685,9 +17735,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _circle = __webpack_require__(/*! ../shapes/circle.js */ "./src/shapes/circle.js");
 
-var _star = __webpack_require__(/*! ../shapes/star */ "./src/shapes/star.js");
+var _star2 = __webpack_require__(/*! ../shapes/star */ "./src/shapes/star.js");
 
-var _star2 = _interopRequireDefault(_star);
+var _star3 = _interopRequireDefault(_star2);
 
 var _ministar = __webpack_require__(/*! ../shapes/ministar */ "./src/shapes/ministar.js");
 
@@ -17753,32 +17803,10 @@ var GameView = function () {
             this.keys[e.keyCode] = true;
             e.preventDefault();
             var move = KEY_DOWN_MOVES[e.keyCode];
-            // if (this.keys[87] && this.movingObject.pos[1] < 790) {
-            //     this.movingObject.power([0, 25]);
-            // }
-            // } else if (this.keys[87] && this.keys[68]) {
-            //     if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
-            //         this.movingObject.pos[0] -= 1;
-            //         this.movingObject.power([8, 25]);
-            //     } else {
-            //         this.movingObject.power([8, -25]);
-            //     }
-            // } else if (this.keys[87] && this.keys[65]) {
-            //     if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
-            //         this.movingObject.pos[0] -= 1;
-            //         this.movingObject.power([-8, 25]);
-            //     } else {
-            //         this.movingObject.power([-8, -25]);
-            //     }
-            // } else if (this.keys[87]) {
-            //     if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
-            //         this.movingObject.pos[0] -= 1;
-            //     } else {
-            //         this.movingObject.power(move);
-            //     }
-            // }
-            console.log(this.keys);
-            // console.log(move);
+
+            // console.log(this.keys);
+
+            // write a jump function
 
             if (this.keys[87] && this.keys[68]) {
                 if (new Date() / 1000 - this.lastJump > 2) {
@@ -17797,51 +17825,12 @@ var GameView = function () {
             } else if (this.keys[68]) {
                 this.movingObject.power([2, 0]);
             } else if (this.keys[87]) {
-                console.log(new Date() / 1000 - this.lastJump > 2);
                 if (new Date() / 1000 - this.lastJump > 2) {
                     this.movingObject.jump(0, -25);
                 }
             }
 
-            // if (this.movingObject.pos[1] < 740) {
-            //     this.movingObject.velocity[1] = 25;
-            // } else if (this.keys[87] && this.keys[68]) {
-            //     this.movingObject.power([8, -25]);
-            //     // if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
-            //     //     // this.movingObject.pos[0] -= 1;
-            //     //     this.movingObject.power([8, 25]);
-            //     // } else {
-            //     //     this.movingObject.power([8, -25]);
-            //     // }
-            // } else if (this.keys[87] && this.keys[65]) {
-            //     if (new Date() / 1000 - this.lastJump > 3 && this.movingObject.pos[1] === 790) {
-            //         this.lastJump = new Date() / 1000;
-            //         this.movingObject.power([this.movingObject.velocity[0], -25]);
-            //     }
-            // } else if (this.keys[87]) {
-            //     console.log(this.lastJump, new Date() / 1000);
-            //     if (new Date() / 1000 - this.lastJump > 3) {
-            //         this.lastJump = new Date() / 1000;
-            //         this.movingObject.power([this.movingObject.velocity[0], -25]);
-            //     }
-            // } else if (this.keys[65]) {
-            //     this.movingObject.power([-8,0]);
-            // } else if (this.keys[68]) {
-            //     this.movingObject.power([8,0]);}
-
-
-            // } else if (this.keys[87] && this.movingObject.pos[1] < 740) {
-            //     this.movingObject.power([this.movingObject.velocity[x], 25]);
-            // }
-
-            console.log(this.movingObject.velocity);
-            // } else if (eDown.which === 87) {
-            //     this.movingObject.power([0, -25]);
-            // } else if (movingObject.velocity[0] > 0) {
-            //     this.movingObject.power([5, 25]);
-            // } else if (movingObject.velocity[0] < 0) {
-            //     this.movingObject.power([-5, 25]);
-            // }
+            // console.log(this.movingObject.velocity);
         }
     }, {
         key: 'keysReleased',
@@ -17849,23 +17838,6 @@ var GameView = function () {
             this.keys[e.keyCode] = false;
             var move = KEY_UP_MOVES[e.keyCode];
             this.movingObject.power(move);
-            // if (this.keys[87] && this.keys[68]) {
-            //     this.movingObject.power([8, -25]);
-            //     // if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
-            //     //     // this.movingObject.pos[0] -= 1;
-            //     //     this.movingObject.power([8, 25]);
-            //     // } else {
-            //     //     this.movingObject.power([8, -25]);
-            //     // }
-            // } else if (this.keys[87] && this.keys[65]) {
-            //     this.movingObject.power([-8, -25]);
-            // } else if (this.keys[87]) {
-            //     this.movingObject.power([this.movingObject.velocity[0], -25]);
-            // } else if (this.keys[65]) {
-            //     this.movingObject.power([-8, 0]);
-            // } else if (this.keys[68]) {
-            //     this.movingObject.power([8, 0]);
-            // }
         }
     }, {
         key: 'bindKeyHandlers',
@@ -17901,7 +17873,7 @@ var GameView = function () {
 
             document.addEventListener('keyup', function (eUp) {
                 // console.log(e)
-                console.log(movingObject.velocity);
+                // console.log(movingObject.velocity);
                 if (eUp === 87) {
                     movingObject.power([0, 25]);
                 } else {
@@ -17942,6 +17914,7 @@ var GameView = function () {
     }, {
         key: 'init',
         value: function init() {
+            // this.gradBkg = new GradientBkg(this.staticCtx, '#0a384a', '#024253');
             this.gradBkg = new GradientBkg(this.staticCtx, '#171e26', '#3f586b');
             this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
             this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
@@ -17958,6 +17931,7 @@ var GameView = function () {
             // by star #shatter method
             this.miniStars = [];
             this.backgroundStars = [];
+            this.stars = [];
             this.ticker = 0;
         }
     }, {
@@ -17970,6 +17944,8 @@ var GameView = function () {
     }, {
         key: 'animate',
         value: function animate(time) {
+            var _this = this;
+
             var timeDelta = time - this.lastTime;
             this.animatedCtx.clearRect(0, 0, 1200, 800);
             requestAnimationFrame(this.animate.bind(this));
@@ -17977,32 +17953,31 @@ var GameView = function () {
             this.game.step(timeDelta);
             this.game.draw(this.gameCtx);
             // console.log(this.stars);
-            // for (let i = 0; i < this.stars.length; i++) {
-            //     const star = this.stars[i];
-            //     this.stars[i].update();
-            //     if (this.stars[i].radius === 0 ) {
-            //         this.stars.splice(i, 1);
-            //     }
-            // }
-
-
-            for (var i = 0; i < this.ambientBkg.prev.length; i++) {
-                // console.log(this.ambientBkg.prev[i]);
-                this.ambientBkg.prev[i].update();
-                // console.log(this.ambientBkg.prev);
-                if (this.ambientBkg.prev[i].ttl === 0) {
-                    this.ambientBkg.prev.splice(i, 1);
+            for (var i = 0; i < this.stars.length; i++) {
+                var star = this.stars[i];
+                this.stars[i].update();
+                if (this.stars[i].radius <= 0) {
+                    this.stars.splice(i, 1);
                 }
             }
 
-            // this.miniStars.forEach((mini, i) => {
-            //     mini.update();
-            //     if (mini.ttl === 0) {
-            //         this.miniStars.splice(i, 1);
-            //     }
-            // });
+            for (var _i = 0; _i < this.ambientBkg.prev.length; _i++) {
+                // console.log(this.ambientBkg.prev[i]);
+                this.ambientBkg.prev[_i].update();
+                // console.log(this.ambientBkg.prev);
+                if (this.ambientBkg.prev[_i].ttl === 0) {
+                    this.ambientBkg.prev.splice(_i, 1);
+                }
+            }
 
-            //      ###############   COMMENT ME BBACK IN !!!!
+            this.miniStars.forEach(function (mini, i) {
+                mini.update();
+                if (mini.ttl === 0) {
+                    _this.miniStars.splice(i, 1);
+                }
+            });
+
+            //  ###############   COMMENT ME BBACK IN !!!!
             // this.ticker++;
             // if (this.ticker === 10 || this.ticker % 175 === 0) {
             //     const x = Math.random() * 1200;
@@ -18011,36 +17986,37 @@ var GameView = function () {
             //     console.log(this.ambientBkg.prev);
             // }
 
-            // this.ticker++;
+            this.ticker++;
             // if (this.ticker % 195 === 0) {
             //     const x = Math.random() * 1200;
             //     // caps at about maximum 210-280 at once
             //     this.ambientBkg.generate(70);
             // }
-            // console.log(this.prev.length);
-            // if (this.ticker % 75 === 0) {
-            //     const x = Math.random() * 1200;
-            //     this.stars.push(new Star({
-            //         x, y: -100, radius: 30, 
-            //         color: 'white', ctx: this.animatedCtx, 
-            //         miniStars: this.miniStars
-            //     }));
-            // }
-        }
-    }, {
-        key: 'createMountainRange',
-        value: function createMountainRange(mountainAmount, height, color) {
-            // canvas - height = distance from top of screen
-            for (var i = 0; i < mountainAmount; i++) {
-                var mountainWidth = 1200 / mountainAmount;
 
-                this.animatedCtx.beginPath();
-                this.animatedCtx.moveTo(i * mountainWidth, 800);
-                this.animatedCtx.lineTo(i * mountainWidth + mountainWidth + 325, 800);
-                this.animatedCtx.lineTo(i * mountainWidth + mountainWidth / 2, 800 - height);
-                this.animatedCtx.lineTo(i * mountainWidth - 325, 800);
-                this.animatedCtx.fillStyle = color;
-                this.animatedCtx.fill();
+            // delete stars that have shrunk
+            this.stars.forEach(function (star, index) {
+                if (star.radius - 3 <= 0) {
+                    _this.stars.splice(index, 1);
+                }
+            });
+            this.game.stars.forEach(function (star, index) {
+                // console.log(this.game.stars);
+                if (star.radius - 3 <= 0) {
+                    _this.game.stars.splice(index, 1);
+                }
+            });
+
+            if (this.ticker % 175 === 0) {
+                var x = Math.random() * 1200;
+                var _star = new _star3.default({
+                    x: 40, y: -100, radius: 8,
+                    color: 'white', ctx: this.animatedCtx,
+                    miniStars: this.miniStars
+                });
+                this.stars.push(_star);
+                this.game.addStar(_star);
+                // console.log(this.stars);
+                // console.log(this.miniStars);
             }
         }
     }]);
@@ -18236,11 +18212,15 @@ var MiniStar = function () {
         this.radius = options.radius;
         this.color = options.color;
         this.ctx = options.ctx;
+        this.purp = options.purp;
+        this.yell = options.yell;
         this.gravity = 0.1;
         this.friction = 0.8;
         this.velocity = {
-            x: utils.randomIntFromRange(-5, 5),
-            y: utils.randomIntFromRange(-15, 15)
+            x: utils.randomIntFromRange(-2, 2),
+            y: utils.randomIntFromRange(-10, 10)
+            // x: utils.randomIntFromRange(-5, 5),
+            // y: utils.randomIntFromRange(-15, 15)
         };
         // time to live = 100 frames
         this.ttl = 300;
@@ -18254,8 +18234,28 @@ var MiniStar = function () {
 
             this.ctx.beginPath();
             this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-            this.ctx.fillStyle = 'rgba(227, 234, 239, ' + this.opacity + ')';
-            this.ctx.shadowColor = '#e3eaef';
+            // light
+            // this.ctx.fillStyle = `rgba(227, 234, 239, ${this.opacity})`;
+            // this.ctx.shadowColor = '#e3eaef';
+            if (this.radius > 1) {
+                this.ctx.fillStyle = 'rgba(227, 234, 239, ' + this.opacity + ')';
+                this.ctx.shadowColor = '#e3eaef';
+            } else if (this.purp) {
+                this.ctx.fillStyle = 'rgba(142,108,229, ' + this.opacity + ')';
+                this.ctx.shadowColor = 'rgb(158,120,255)';
+            } else if (this.yell) {
+                this.ctx.fillStyle = 'rgba(255,251,186, ' + this.opacity + ')';
+                this.ctx.shadowColor = 'rgb(229,226,167)';
+            } else {
+                this.ctx.fillStyle = 'rgba(95,237,255, ' + this.opacity + ')';
+                this.ctx.shadowColor = 'rgb(255,255,255)';
+            }
+            // cyan
+            // this.ctx.fillStyle = `rgba(95,237,255, ${this.opacity})`;
+            // this.ctx.shadowColor = 'rgb(255,255,255)';
+            // dark
+            // this.ctx.fillStyle = `rgba(28, 21, 16, ${this.opacity})`;
+            // this.ctx.shadowColor = '#1c1510';
             this.ctx.shadowBlur = 20;
             this.ctx.fill();
             this.ctx.closePath();
@@ -18280,6 +18280,9 @@ var MiniStar = function () {
             //    1 / ttl will return
             // subtract a larger and larger value from
             //    opacity the lower a ministar's ttl
+            if (Math.floor(this.radius) < 0) {
+                this.radius -= 1 / this.ttl;
+            }
             this.opacity -= 1 / this.ttl;
         }
     }]);
@@ -18398,6 +18401,12 @@ var _ministar = __webpack_require__(/*! ./ministar */ "./src/shapes/ministar.js"
 
 var _ministar2 = _interopRequireDefault(_ministar);
 
+var _utils = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
+
+var utils = _interopRequireWildcard(_utils);
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -18408,6 +18417,7 @@ var Star = function () {
 
         this.x = options.x;
         this.y = options.y;
+        this.pos = [this.x, this.y];
         this.radius = options.radius;
         this.color = options.color;
         this.ctx = options.ctx;
@@ -18415,6 +18425,7 @@ var Star = function () {
         this.friction = 0.8;
         this.velocity = {
             x: 0,
+            // x: utils.randomIntFromRange(-10, 10),
             y: 3
         };
         this.miniStars = options.miniStars;
@@ -18422,14 +18433,55 @@ var Star = function () {
     }
 
     _createClass(Star, [{
+        key: 'isCollidedWith',
+        value: function isCollidedWith(obj2) {
+            var dist = utils.distance(this.x, this.y, obj2.pos[0], obj2.pos[1]);
+            if (dist < this.radius + obj2.radius) {
+                console.log(dist < this.radius + 15 + obj2.radius);
+                return true;
+            }
+
+            return false;
+        }
+    }, {
         key: 'shatter',
         value: function shatter(arr) {
             this.radius -= 3;
-            for (var i = 0; i < 8; i++) {
+            for (var i = 0; i < 5; i++) {
                 arr.push(new _ministar2.default({
                     x: this.x,
                     y: this.y,
                     radius: 2,
+                    color: 'rgba(227, 234, 239, 1)',
+                    ctx: this.ctx
+                }));
+            }
+            for (var _i = 0; _i < 4; _i++) {
+                arr.push(new _ministar2.default({
+                    x: this.x,
+                    y: this.y,
+                    radius: 1,
+                    color: 'rgba(227, 234, 239, 1)',
+                    ctx: this.ctx
+                }));
+            }
+            for (var _i2 = 0; _i2 < 4; _i2++) {
+                arr.push(new _ministar2.default({
+                    x: this.x,
+                    y: this.y,
+                    purp: true,
+                    radius: 1,
+                    color: 'rgba(227, 234, 239, 1)',
+                    ctx: this.ctx
+                }));
+            }
+
+            for (var _i3 = 0; _i3 < 4; _i3++) {
+                arr.push(new _ministar2.default({
+                    x: this.x,
+                    y: this.y,
+                    yell: true,
+                    radius: 1,
                     color: 'rgba(227, 234, 239, 1)',
                     ctx: this.ctx
                 }));
@@ -18457,13 +18509,15 @@ var Star = function () {
         value: function update() {
             this.draw();
 
-            if (this.y + this.radius + this.velocity.y > 800) {
+            // removed radius from calc so star would hit floor
+            if (this.y + this.velocity.y > 800) {
                 // this.y = -this.velocity.y;
                 this.velocity.y = -this.velocity.y * this.friction;
                 this.shatter(this.miniStars);
             } else {
                 this.velocity.y += this.gravity;
             }
+            this.x += this.velocity.x;
             this.y += this.velocity.y;
         }
     }]);

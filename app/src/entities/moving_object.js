@@ -5,13 +5,23 @@ const NORMAL_FRAME_TIME_DELTA = 100; // 1000 / 60;
 class MovingObject {
     constructor(options) {
         this.pos = options.pos;
+        this.x = this.pos[0];
+        this.y = this.pos[1];
         this.velocity = options.velocity || [0, 0];
         this.radius = options.radius;
         this.color = options.color;
         this.game = options.game;
         this.gravity = 10;
+    }
 
+    isCollidedWith (obj2) {
+        const dist = utils.distance(this.pos[0], this.pos[1], obj2.x, obj2.y);
+        if (dist < this.radius + obj2.radius) {
+            console.log(dist < this.radius + 15 + obj2.radius);
+            return true;
+        }
 
+        return false;
     }
 
     jump(x, y) {
