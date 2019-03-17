@@ -1,30 +1,31 @@
 import MovingObject from '../entities/moving_object';
 import { merge } from 'lodash';
 
-function Game() {
-    this.players = [];
-    this.movingObjects = [];
+const X = 1200;
+const Y = 800;
+const FPS = 32;
 
-    Game.X = 1200;
-    Game.Y = 800;
-    Game.FPS = 32;
+class Game {
+    constructor() {
+        this.players = [];
+        this.movingObjects = [];
+    }
 
-    Game.prototype.allEntities = function () {
+    allEntities () {
         return _.merge(this.players, this.movingObjects);
-    };
+    }
 
-
-    Game.prototype.add = function (object) {
+    add (object) {
         if (object.constructor.name === 'MovingObject') {
             this.movingObjects.push(object);
         } else {
             throw new Error("unknown type of object");
         }
-    };
+    }
 
-    Game.prototype.addMovingObject = function () {
+    addMovingObject () {
         const movingObject = new MovingObject({
-            pos: [5, 790], // add radius later to acct for object height
+            pos: [10, 790], // add radius later to acct for object height
             game: this,
             velocity: [0, 0],
             color: 'white',
@@ -33,26 +34,26 @@ function Game() {
 
         this.add(movingObject);
         return movingObject;
-    };
+    }
 
-    Game.prototype.moveObjects = function (delta) {
+    moveObjects (delta) {
         this.allEntities().forEach((object) => {
             object.move(delta);
         });
-    };
+    }
 
-    Game.prototype.step = function (delta) {
+    step (delta) {
         this.moveObjects(delta);
-    };
+    }
 
-    Game.prototype.draw = function draw(ctx) {
-        ctx.clearRect(0, 0, Game.X, Game.Y);
+    draw(ctx) {
+        ctx.clearRect(0, 0, X, Y);
         
         this.allEntities().forEach((object) => {
             object.draw(ctx);
         });
-    };
+    }
     
 }
 
-module.exports = Game;
+export default Game;

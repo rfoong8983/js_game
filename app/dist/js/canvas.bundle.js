@@ -17504,16 +17504,41 @@ var MovingObject = function () {
         this.radius = options.radius;
         this.color = options.color;
         this.game = options.game;
+        this.gravity = 10;
     }
 
     _createClass(MovingObject, [{
+        key: 'jump',
+        value: function jump(x, y) {
+            if (this.pos[1] < 740) {
+                this.velocity[1] -= y;
+            } else {
+                this.velocity[1] += y;
+            }
+            this.velocity[0] += x;
+        }
+    }, {
         key: 'draw',
         value: function draw(ctx) {
             ctx.fillStyle = this.color;
             ctx.beginPath();
-            ctx.arc(this.pos[0], this.pos[1], this.radius, 0, Math.PI * 2, false);
-            ctx.fill();
+            if (this.pos[1] < 780) {
+                this.pos[1] += this.gravity;
+            } else if (this.pos[1] + this.velocity[1] + this.gravity >= 780) {
+                this.velocity[1] = 0;
+                this.pos[1] = 780;
+            }
+            if (this.pos[0] + this.velocity[0] + this.radius >= 1200) {
+                this.velocity[0] = 0;
+                this.pos[0] = 1200 - this.radius;
+            } else if (this.pos[0] - this.radius + this.velocity[0] <= 0) {
+                this.velocity[0] = 0;
+                this.pos[0] = this.radius;
+            }
+            ctx.ellipse(this.pos[0], this.pos[1], 2, 9, 0, Math.PI * 2, false);
+            ctx.ellipse(this.pos[0], this.pos[1] - 16, 3, 2, 0, Math.PI * 2, false);
             ctx.closePath();
+            ctx.fill();
         }
     }, {
         key: 'move',
@@ -17526,7 +17551,7 @@ var MovingObject = function () {
             // offsetX = this.velocity[0] * velocityScale,
             // offsetY = this.velocity[1] * velocityScale;
             var offsetX = this.velocity[0] * 1,
-                offsetY = this.velocity[1] * 1;
+                offsetY = this.pos[1] >= 740 ? this.velocity[1] * 1 : 0;
 
             this.pos = [this.pos[0] + offsetX, this.pos[1] + offsetY];
             // this.pos = [this.pos[0], this.pos[1]];
@@ -17556,6 +17581,12 @@ exports.default = MovingObject;
 "use strict";
 
 
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _moving_object = __webpack_require__(/*! ../entities/moving_object */ "./src/entities/moving_object.js");
 
 var _moving_object2 = _interopRequireDefault(_moving_object);
@@ -17564,59 +17595,75 @@ var _lodash = __webpack_require__(/*! lodash */ "./node_modules/lodash/lodash.js
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function Game() {
-    this.players = [];
-    this.movingObjects = [];
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-    Game.X = 1200;
-    Game.Y = 800;
-    Game.FPS = 32;
+var X = 1200;
+var Y = 800;
+var FPS = 32;
 
-    Game.prototype.allEntities = function () {
-        return _.merge(this.players, this.movingObjects);
-    };
+var Game = function () {
+    function Game() {
+        _classCallCheck(this, Game);
 
-    Game.prototype.add = function (object) {
-        if (object.constructor.name === 'MovingObject') {
-            this.movingObjects.push(object);
-        } else {
-            throw new Error("unknown type of object");
+        this.players = [];
+        this.movingObjects = [];
+    }
+
+    _createClass(Game, [{
+        key: 'allEntities',
+        value: function allEntities() {
+            return _.merge(this.players, this.movingObjects);
         }
-    };
+    }, {
+        key: 'add',
+        value: function add(object) {
+            if (object.constructor.name === 'MovingObject') {
+                this.movingObjects.push(object);
+            } else {
+                throw new Error("unknown type of object");
+            }
+        }
+    }, {
+        key: 'addMovingObject',
+        value: function addMovingObject() {
+            var movingObject = new _moving_object2.default({
+                pos: [10, 790], // add radius later to acct for object height
+                game: this,
+                velocity: [0, 0],
+                color: 'white',
+                radius: 10
+            });
 
-    Game.prototype.addMovingObject = function () {
-        var movingObject = new _moving_object2.default({
-            pos: [5, 790], // add radius later to acct for object height
-            game: this,
-            velocity: [0, 0],
-            color: 'white',
-            radius: 10
-        });
+            this.add(movingObject);
+            return movingObject;
+        }
+    }, {
+        key: 'moveObjects',
+        value: function moveObjects(delta) {
+            this.allEntities().forEach(function (object) {
+                object.move(delta);
+            });
+        }
+    }, {
+        key: 'step',
+        value: function step(delta) {
+            this.moveObjects(delta);
+        }
+    }, {
+        key: 'draw',
+        value: function draw(ctx) {
+            ctx.clearRect(0, 0, X, Y);
 
-        this.add(movingObject);
-        return movingObject;
-    };
+            this.allEntities().forEach(function (object) {
+                object.draw(ctx);
+            });
+        }
+    }]);
 
-    Game.prototype.moveObjects = function (delta) {
-        this.allEntities().forEach(function (object) {
-            object.move(delta);
-        });
-    };
+    return Game;
+}();
 
-    Game.prototype.step = function (delta) {
-        this.moveObjects(delta);
-    };
-
-    Game.prototype.draw = function draw(ctx) {
-        ctx.clearRect(0, 0, Game.X, Game.Y);
-
-        this.allEntities().forEach(function (object) {
-            object.draw(ctx);
-        });
-    };
-}
-
-module.exports = Game;
+exports.default = Game;
 
 /***/ }),
 
@@ -17669,10 +17716,16 @@ var MountainsBkg = __webpack_require__(/*! ../background/mountains_bkgrd */ "./s
 var AmbientBkg = __webpack_require__(/*! ../background/ambient_bkgrd */ "./src/background/ambient_bkgrd.js");
 
 var KEY_DOWN_MOVES = {
-    87: [0, -3], // 87 w
-    65: [-3, 0], // 65 a
-    83: [0, 3], // 83 s
-    68: [3, 0] // 68 d
+    87: [0, -25], // 87 w
+    65: [-5, 0], // 65 a
+    // 83: [0, 5], // 85 s
+    68: [5, 0] // 68 d
+};
+var KEY_UP_MOVES = {
+    87: [0, 25], // 87 w
+    65: [0, 0], // 65 a
+    // 83: [0, 5], // 85 s
+    68: [0, 0] // 68 d
 };
 
 var GameView = function () {
@@ -17686,25 +17739,174 @@ var GameView = function () {
         this.preloaded = [];
         this.game = game;
         this.movingObject = this.game.addMovingObject();
+        this.lastJump = new Date() / 1000;
         // this.particles = [];
         this.init();
+        this.keysPressed = this.keysPressed.bind(this);
+        this.keysReleased = this.keysReleased.bind(this);
+        this.bindKeyHandlers = this.bindKeyHandlers.bind(this);
     }
 
     _createClass(GameView, [{
+        key: 'keysPressed',
+        value: function keysPressed(e) {
+            this.keys[e.keyCode] = true;
+            e.preventDefault();
+            var move = KEY_DOWN_MOVES[e.keyCode];
+            // if (this.keys[87] && this.movingObject.pos[1] < 790) {
+            //     this.movingObject.power([0, 25]);
+            // }
+            // } else if (this.keys[87] && this.keys[68]) {
+            //     if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
+            //         this.movingObject.pos[0] -= 1;
+            //         this.movingObject.power([8, 25]);
+            //     } else {
+            //         this.movingObject.power([8, -25]);
+            //     }
+            // } else if (this.keys[87] && this.keys[65]) {
+            //     if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
+            //         this.movingObject.pos[0] -= 1;
+            //         this.movingObject.power([-8, 25]);
+            //     } else {
+            //         this.movingObject.power([-8, -25]);
+            //     }
+            // } else if (this.keys[87]) {
+            //     if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
+            //         this.movingObject.pos[0] -= 1;
+            //     } else {
+            //         this.movingObject.power(move);
+            //     }
+            // }
+            console.log(this.keys);
+            // console.log(move);
+
+            if (this.keys[87] && this.keys[68]) {
+                if (new Date() / 1000 - this.lastJump > 2) {
+                    this.movingObject.jump(2, -25);
+                } else {
+                    this.movingObject.jump(2, 25);
+                }
+            } else if (this.keys[87] && this.keys[65]) {
+                if (new Date() / 1000 - this.lastJump > 2) {
+                    this.movingObject.jump(-2, -25);
+                } else {
+                    this.movingObject.jump(-2, 25);
+                }
+            } else if (this.keys[65]) {
+                this.movingObject.power([-2, 0]);
+            } else if (this.keys[68]) {
+                this.movingObject.power([2, 0]);
+            } else if (this.keys[87]) {
+                console.log(new Date() / 1000 - this.lastJump > 2);
+                if (new Date() / 1000 - this.lastJump > 2) {
+                    this.movingObject.jump(0, -25);
+                }
+            }
+
+            // if (this.movingObject.pos[1] < 740) {
+            //     this.movingObject.velocity[1] = 25;
+            // } else if (this.keys[87] && this.keys[68]) {
+            //     this.movingObject.power([8, -25]);
+            //     // if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
+            //     //     // this.movingObject.pos[0] -= 1;
+            //     //     this.movingObject.power([8, 25]);
+            //     // } else {
+            //     //     this.movingObject.power([8, -25]);
+            //     // }
+            // } else if (this.keys[87] && this.keys[65]) {
+            //     if (new Date() / 1000 - this.lastJump > 3 && this.movingObject.pos[1] === 790) {
+            //         this.lastJump = new Date() / 1000;
+            //         this.movingObject.power([this.movingObject.velocity[0], -25]);
+            //     }
+            // } else if (this.keys[87]) {
+            //     console.log(this.lastJump, new Date() / 1000);
+            //     if (new Date() / 1000 - this.lastJump > 3) {
+            //         this.lastJump = new Date() / 1000;
+            //         this.movingObject.power([this.movingObject.velocity[0], -25]);
+            //     }
+            // } else if (this.keys[65]) {
+            //     this.movingObject.power([-8,0]);
+            // } else if (this.keys[68]) {
+            //     this.movingObject.power([8,0]);}
+
+
+            // } else if (this.keys[87] && this.movingObject.pos[1] < 740) {
+            //     this.movingObject.power([this.movingObject.velocity[x], 25]);
+            // }
+
+            console.log(this.movingObject.velocity);
+            // } else if (eDown.which === 87) {
+            //     this.movingObject.power([0, -25]);
+            // } else if (movingObject.velocity[0] > 0) {
+            //     this.movingObject.power([5, 25]);
+            // } else if (movingObject.velocity[0] < 0) {
+            //     this.movingObject.power([-5, 25]);
+            // }
+        }
+    }, {
+        key: 'keysReleased',
+        value: function keysReleased(e) {
+            this.keys[e.keyCode] = false;
+            var move = KEY_UP_MOVES[e.keyCode];
+            this.movingObject.power(move);
+            // if (this.keys[87] && this.keys[68]) {
+            //     this.movingObject.power([8, -25]);
+            //     // if (this.movingObject.pos[0] > 740 && this.movingObject.pos[0] < 791) {
+            //     //     // this.movingObject.pos[0] -= 1;
+            //     //     this.movingObject.power([8, 25]);
+            //     // } else {
+            //     //     this.movingObject.power([8, -25]);
+            //     // }
+            // } else if (this.keys[87] && this.keys[65]) {
+            //     this.movingObject.power([-8, -25]);
+            // } else if (this.keys[87]) {
+            //     this.movingObject.power([this.movingObject.velocity[0], -25]);
+            // } else if (this.keys[65]) {
+            //     this.movingObject.power([-8, 0]);
+            // } else if (this.keys[68]) {
+            //     this.movingObject.power([8, 0]);
+            // }
+        }
+    }, {
         key: 'bindKeyHandlers',
         value: function bindKeyHandlers() {
             var movingObject = this.movingObject;
 
-            document.addEventListener('keydown', function (e) {
-                var move = KEY_DOWN_MOVES[JSON.stringify(e.which)];
-                console.log(movingObject.velocity);
-                movingObject.power(move);
+            document.addEventListener('keydown', this.keysPressed, false);
+
+            document.addEventListener('keyup', this.keysReleased, false);
+        }
+    }, {
+        key: 'bindKeyHandlers2',
+        value: function bindKeyHandlers2() {
+            var movingObject = this.movingObject;
+
+            document.addEventListener('keydown', function (eDown) {
+                var move = KEY_DOWN_MOVES[JSON.stringify(eDown.which)];
+                // console.log(movingObject.velocity);
+                if (eDown.which !== 87) {
+                    movingObject.power(move);
+                } else if (movingObject.pos[1] === 790 && eDown.which === 87) {
+                    movingObject.power(move);
+                    // } else if (movingObject.pos[1] < 741 && eDown.which === 87) {
+                    //     movingObject.power([0, 0]);
+                } else if (eDown.which === 87) {
+                    movingObject.power([0, -25]);
+                } else if (movingObject.velocity[0] > 0) {
+                    movingObject.power([5, 25]);
+                } else if (movingObject.velocity[0] < 0) {
+                    movingObject.power([-5, 25]);
+                }
             });
 
-            document.addEventListener('keyup', function (e) {
+            document.addEventListener('keyup', function (eUp) {
                 // console.log(e)
                 console.log(movingObject.velocity);
-                movingObject.power([0, 0]);
+                if (eUp === 87) {
+                    movingObject.power([0, 25]);
+                } else {
+                    movingObject.power([0, 0]);
+                }
             });
         }
 
@@ -17751,7 +17953,7 @@ var GameView = function () {
             this.generateOffScreenParticles();
             // console.log(this.offScreenBkg.particles);
 
-            this.stars = [];
+            this.keys = [];
             // this.miniStars is being changed
             // by star #shatter method
             this.miniStars = [];
@@ -17860,13 +18062,15 @@ exports.default = GameView;
 "use strict";
 
 
+var _game = __webpack_require__(/*! ./game/game */ "./src/game/game.js");
+
+var _game2 = _interopRequireDefault(_game);
+
 var _game_view = __webpack_require__(/*! ./game/game_view */ "./src/game/game_view.js");
 
 var _game_view2 = _interopRequireDefault(_game_view);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-var Game = __webpack_require__(/*! ./game/game */ "./src/game/game.js");
 
 var OffScreenCtx = __webpack_require__(/*! ./background/offscreen_bkgrd */ "./src/background/offscreen_bkgrd.js");
 
@@ -17889,7 +18093,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var gameCtx = gameCanvas.getContext('2d');
     var offScreenCtx = new OffScreenCtx(staticCanvas.width, staticCanvas.height, 2);
 
-    var game = new Game();
+    var game = new _game2.default();
     new _game_view2.default(game, staticCtx, animatedCtx, gameCtx, offScreenCtx).start();
     // new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx);
 });

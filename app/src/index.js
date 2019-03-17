@@ -1,4 +1,4 @@
-const Game = require("./game/game");
+import Game from './game/game';
 import GameView from './game/game_view';
 const OffScreenCtx = require('./background/offscreen_bkgrd');
 
