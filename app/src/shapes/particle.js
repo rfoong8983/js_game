@@ -5,8 +5,10 @@ class Particle {
         // screen dimensions are passed in 
         // for x & y values.
         // x & y values are dimensions * random (0.0 - 1.0)
-        this.x = Math.random() * options.x -325;
-        this.y = Math.random() * options.y -325;
+        // this.x = options.x;
+        // this.y = options.y;
+        this.x = Math.random() * options.x -425;
+        this.y = Math.random() * options.y -425;
         this.radius = options.radius;
         this.color = options.color;
         this.ctx = options.ctx;

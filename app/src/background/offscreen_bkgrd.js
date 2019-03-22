@@ -1,9 +1,9 @@
 import Particle from '../shapes/particle';
 
-function OffScreenCtx(scWidth, scHeight, proportion) {
+function OffScreenCtx(scWidth, scHeight, divideBy) {
     this.canvas = document.createElement("canvas");
-    this.canvas.width = Math.floor(scWidth / proportion);
-    this.canvas.height = Math.floor(scHeight / proportion);
+    this.canvas.width = Math.floor(scWidth / divideBy);
+    this.canvas.height = Math.floor(scHeight / divideBy);
     this.ctx = this.canvas.getContext('2d');
     this.particles = [];
 }

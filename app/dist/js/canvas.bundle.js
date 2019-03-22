@@ -17358,18 +17358,36 @@ var utils = _interopRequireWildcard(_utils);
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
 
-function GradientBkg(ctx, startColor, endColor) {
+function GradientBkg(ctx, stopColors) {
+    // function GradientBkg (ctx, stopColors) {
     this.ctx = ctx;
-    this.startColor = startColor;
-    this.endColor = endColor;
+    // this.startColor = startColor;
+    // this.endColor = endColor;
+    this.startColor = stopColors.start;
+    this.endColor = stopColors.end;
+    this.middle = stopColors.middle;
     this.bkg = this.ctx.createLinearGradient(0, 0, 0, 800);
 }
 
 GradientBkg.prototype.draw = function () {
+    var _this = this;
+
     this.bkg.addColorStop(0, this.startColor);
+    var i = 1;
+    var midLength = this.middle.length;
+    var incr = 1 / (midLength + 1);
+    this.middle.forEach(function (col) {
+        _this.bkg.addColorStop(0.7, col);
+        // this.bkg.addColorStop(incr * i, col);
+        i++;
+    });
     this.bkg.addColorStop(1, this.endColor);
     this.ctx.fillStyle = this.bkg;
     this.ctx.fillRect(0, 0, 1200, 800);
+    // this.bkg.addColorStop(0, this.startColor);
+    // this.bkg.addColorStop(1, this.endColor);
+    // this.ctx.fillStyle = this.bkg;
+    // this.ctx.fillRect(0, 0, 1200, 800);
 };
 
 module.exports = GradientBkg;
@@ -17434,10 +17452,10 @@ var _particle2 = _interopRequireDefault(_particle);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function OffScreenCtx(scWidth, scHeight, proportion) {
+function OffScreenCtx(scWidth, scHeight, divideBy) {
     this.canvas = document.createElement("canvas");
-    this.canvas.width = Math.floor(scWidth / proportion);
-    this.canvas.height = Math.floor(scHeight / proportion);
+    this.canvas.width = Math.floor(scWidth / divideBy);
+    this.canvas.height = Math.floor(scHeight / divideBy);
     this.ctx = this.canvas.getContext('2d');
     this.particles = [];
 }
@@ -17819,9 +17837,15 @@ var GameView = function () {
         this.keysPressed = this.keysPressed.bind(this);
         this.keysReleased = this.keysReleased.bind(this);
         this.bindKeyHandlers = this.bindKeyHandlers.bind(this);
+        this.gameOverBox = document.getElementsByClassName("gameOver")[0];
     }
 
     _createClass(GameView, [{
+        key: 'gameOverMessage',
+        value: function gameOverMessage() {
+            this.gameOverBox.id = "visible";
+        }
+    }, {
         key: 'keysPressed',
         value: function keysPressed(e) {
             this.keys[e.keyCode] = true;
@@ -17872,39 +17896,6 @@ var GameView = function () {
 
             document.addEventListener('keyup', this.keysReleased, false);
         }
-    }, {
-        key: 'bindKeyHandlers2',
-        value: function bindKeyHandlers2() {
-            var movingObject = this.movingObject;
-
-            document.addEventListener('keydown', function (eDown) {
-                var move = KEY_DOWN_MOVES[JSON.stringify(eDown.which)];
-                // console.log(movingObject.velocity);
-                if (eDown.which !== 87) {
-                    movingObject.power(move);
-                } else if (movingObject.pos[1] === 790 && eDown.which === 87) {
-                    movingObject.power(move);
-                    // } else if (movingObject.pos[1] < 741 && eDown.which === 87) {
-                    //     movingObject.power([0, 0]);
-                } else if (eDown.which === 87) {
-                    movingObject.power([0, -25]);
-                } else if (movingObject.velocity[0] > 0) {
-                    movingObject.power([5, 25]);
-                } else if (movingObject.velocity[0] < 0) {
-                    movingObject.power([-5, 25]);
-                }
-            });
-
-            document.addEventListener('keyup', function (eUp) {
-                // console.log(e)
-                // console.log(movingObject.velocity);
-                if (eUp === 87) {
-                    movingObject.power([0, 25]);
-                } else {
-                    movingObject.power([0, 0]);
-                }
-            });
-        }
 
         // move gradients and static images out of animation
         // draw snow in off-screen canvas
@@ -17915,8 +17906,8 @@ var GameView = function () {
         value: function generateOffScreenParticles() {
             for (var i = 0; i < 70; i++) {
                 this.preloaded.push(new _particle2.default({
-                    x: this.offScreenBkg.canvas.width,
-                    y: this.offScreenBkg.canvas.height,
+                    x: Math.random() * this.offScreenBkg.canvas.width,
+                    y: Math.random() * this.offScreenBkg.canvas.height,
                     radius: Math.random() * 2,
                     color: 'rgba(227, 234, 239, 1)',
                     ctx: this.animatedCtx,
@@ -17927,32 +17918,30 @@ var GameView = function () {
     }, {
         key: 'displayStaticBkgrd',
         value: function displayStaticBkgrd() {
-            this.gradBkg.draw();
-            this.mountBkg1.draw();
-            this.mountBkg2.draw();
-            this.mountBkg3.draw();
-            // this.backgroundStars.forEach(star => {
-            //     star.draw();
-            // });
-        }
-    }, {
-        key: 'init',
-        value: function init() {
-            // this.gradBkg = new GradientBkg(this.staticCtx, '#0a384a', '#024253');
-            this.gradBkg = new GradientBkg(this.staticCtx, '#171e26', '#3f586b');
+            // this.gradBkg = new GradientBkg(this.staticCtx, 
+            // { start: '#171e26', end: '#3f586b', middle: [] }); original
+            this.gradBkg = new GradientBkg(this.staticCtx, { start: '#233345', end: '#12437b', middle: [] });
+
+            this.staticCtx.filter = 'blur(2px)';
+            // this.gradBkg = new GradientBkg(this.staticCtx, 
+            //     { start: '#2473ab', end: '#5b7983', middle: ['#1e528e'] });
             this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
             this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
             this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
             this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26');
 
+            this.gradBkg.draw();
+            // this.mountBkg1.draw();
+            // this.mountBkg2.draw();
+            // this.mountBkg3.draw();
+        }
+    }, {
+        key: 'init',
+        value: function init() {
             this.displayStaticBkgrd();
-
             this.generateOffScreenParticles();
-            // console.log(this.offScreenBkg.particles);
 
             this.keys = [];
-            // this.miniStars is being changed
-            // by star #shatter method
             this.miniStars = [];
             this.backgroundStars = [];
             this.stars = [];
@@ -17976,7 +17965,7 @@ var GameView = function () {
             var _this = this;
 
             if (this.game.gameOver) {
-                console.log(this.game.gameOver);
+                this.gameOverMessage();
                 this.stop();
             } else {
                 var timeDelta = time - this.lastTime;
@@ -18012,19 +18001,12 @@ var GameView = function () {
 
                 //  ###############   COMMENT ME BBACK IN !!!!
                 // ###### MOVING BKG
-                if (this.ticker === 10 || this.ticker % 175 === 0) {
+                if (this.ticker === 0 || this.ticker % 185 === 0) {
                     var x = Math.random() * 1200;
-
+                    this.generateOffScreenParticles();
                     this.ambientBkg.generate(this.preloaded);
-                    console.log(this.ambientBkg.prev);
+                    // console.log(this.ambientBkg.prev);
                 }
-
-                this.ticker++;
-                // if (this.ticker % 195 === 0) {
-                //     const x = Math.random() * 1200;
-                //     // caps at about maximum 210-280 at once
-                //     this.ambientBkg.generate(70);
-                // }
 
                 // delete stars that have shrunk
                 this.stars.forEach(function (star, index) {
@@ -18051,6 +18033,8 @@ var GameView = function () {
                     // console.log(this.stars);
                     // console.log(this.miniStars);
                 }
+
+                this.ticker++;
             }
         }
     }]);
@@ -18359,8 +18343,10 @@ var Particle = function () {
         // screen dimensions are passed in 
         // for x & y values.
         // x & y values are dimensions * random (0.0 - 1.0)
-        this.x = Math.random() * options.x - 325;
-        this.y = Math.random() * options.y - 325;
+        // this.x = options.x;
+        // this.y = options.y;
+        this.x = Math.random() * options.x - 425;
+        this.y = Math.random() * options.y - 425;
         this.radius = options.radius;
         this.color = options.color;
         this.ctx = options.ctx;
@@ -18490,45 +18476,46 @@ var Star = function () {
         value: function shatter(arr) {
             this.radius -= 3;
             // add back in for particles
-            for (var i = 0; i < 5; i++) {
-                arr.push(new _ministar2.default({
-                    x: this.x,
-                    y: this.y,
-                    radius: 2,
-                    color: 'rgba(227, 234, 239, 1)',
-                    ctx: this.ctx
-                }));
-            }
-            for (var _i = 0; _i < 4; _i++) {
-                arr.push(new _ministar2.default({
-                    x: this.x,
-                    y: this.y,
-                    radius: 1,
-                    color: 'rgba(227, 234, 239, 1)',
-                    ctx: this.ctx
-                }));
-            }
-            for (var _i2 = 0; _i2 < 4; _i2++) {
-                arr.push(new _ministar2.default({
-                    x: this.x,
-                    y: this.y,
-                    purp: true,
-                    radius: 1,
-                    color: 'rgba(227, 234, 239, 1)',
-                    ctx: this.ctx
-                }));
-            }
+            // ############ COMMENT BACK FOR MINISTARS
+            // for (let i = 0; i < 5; i++) {
+            //     arr.push(new MiniStar({
+            //         x: this.x,
+            //         y: this.y,
+            //         radius: 2,
+            //         color: `rgba(227, 234, 239, 1)`,
+            //         ctx: this.ctx
+            //     }));
+            // }
+            // for (let i = 0; i < 4; i++) {
+            //     arr.push(new MiniStar({
+            //         x: this.x,
+            //         y: this.y,
+            //         radius: 1,
+            //         color: `rgba(227, 234, 239, 1)`,
+            //         ctx: this.ctx
+            //     }));
+            // }
+            // for (let i = 0; i < 4; i++) {
+            //     arr.push(new MiniStar({
+            //         x: this.x,
+            //         y: this.y,
+            //         purp: true,
+            //         radius: 1,
+            //         color: `rgba(227, 234, 239, 1)`,
+            //         ctx: this.ctx
+            //     }));
+            // }
 
-            for (var _i3 = 0; _i3 < 4; _i3++) {
-                arr.push(new _ministar2.default({
-                    x: this.x,
-                    y: this.y,
-                    yell: true,
-                    radius: 1,
-                    color: 'rgba(227, 234, 239, 1)',
-                    ctx: this.ctx
-                }));
-            }
+            // for (let i = 0; i < 4; i++) {
+            //     arr.push(new MiniStar({
+            //         x: this.x,
+            //         y: this.y,
+            //         yell: true,
+            //         radius: 1,
+            //         color: `rgba(227, 234, 239, 1)`,
+            //         ctx: this.ctx
+            //     }));
+            // }
 
             // console.log(arr);
         }

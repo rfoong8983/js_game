@@ -37,6 +37,11 @@ class GameView {
         this.keysPressed = this.keysPressed.bind(this);
         this.keysReleased = this.keysReleased.bind(this);
         this.bindKeyHandlers = this.bindKeyHandlers.bind(this);
+        this.gameOverBox = document.getElementsByClassName("gameOver")[0];
+    }
+
+    gameOverMessage() {
+        this.gameOverBox.id = "visible";
     }
 
     keysPressed(e) {
@@ -86,42 +91,8 @@ class GameView {
         document.addEventListener('keydown', this.keysPressed, false);
 
         document.addEventListener('keyup', this.keysReleased, false);
-        
-        
     }
-    bindKeyHandlers2() {
-        const movingObject = this.movingObject;
 
-        document.addEventListener('keydown', (eDown) => {
-            const move = KEY_DOWN_MOVES[JSON.stringify(eDown.which)];
-            // console.log(movingObject.velocity);
-            if (eDown.which !== 87) {
-                movingObject.power(move);
-            } else if (movingObject.pos[1] === 790 && eDown.which === 87) {
-                movingObject.power(move);
-            // } else if (movingObject.pos[1] < 741 && eDown.which === 87) {
-            //     movingObject.power([0, 0]);
-            } else if (eDown.which === 87) {
-                movingObject.power([0, -25]);
-            } else if (movingObject.velocity[0] > 0) {
-                movingObject.power([5, 25]);
-            } else if (movingObject.velocity[0] < 0) {
-                movingObject.power([-5, 25]);
-            }
-        });
-
-        document.addEventListener('keyup', (eUp) => {
-            // console.log(e)
-            // console.log(movingObject.velocity);
-            if (eUp === 87) {
-                movingObject.power([0, 25]);
-            } else {
-                movingObject.power([0, 0]);
-            }
-        });
-        
-        
-    }
 
     // move gradients and static images out of animation
     // draw snow in off-screen canvas
@@ -129,8 +100,8 @@ class GameView {
     generateOffScreenParticles() {
         for (let i = 0; i < 70; i++) {
             this.preloaded.push(new Particle({
-                x: this.offScreenBkg.canvas.width, 
-                y: this.offScreenBkg.canvas.height,
+                x: Math.random() * this.offScreenBkg.canvas.width, 
+                y: Math.random() * this.offScreenBkg.canvas.height,
                 radius: Math.random() * 2,
                 color: `rgba(227, 234, 239, 1)`,
                 ctx: this.animatedCtx, 
@@ -140,31 +111,31 @@ class GameView {
     }
     
     displayStaticBkgrd() {
-        this.gradBkg.draw();
-        this.mountBkg1.draw();
-        this.mountBkg2.draw();
-        this.mountBkg3.draw();
-        // this.backgroundStars.forEach(star => {
-        //     star.draw();
-        // });
-    }
+        // this.gradBkg = new GradientBkg(this.staticCtx, 
+            // { start: '#171e26', end: '#3f586b', middle: [] }); original
+        this.gradBkg = new GradientBkg(this.staticCtx, 
+            { start: '#233345', end: '#12437b', middle: [] });
 
-    init() {
-        // this.gradBkg = new GradientBkg(this.staticCtx, '#0a384a', '#024253');
-        this.gradBkg = new GradientBkg(this.staticCtx, '#171e26', '#3f586b');
+        this.staticCtx.filter = 'blur(2px)';
+        // this.gradBkg = new GradientBkg(this.staticCtx, 
+        //     { start: '#2473ab', end: '#5b7983', middle: ['#1e528e'] });
         this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
         this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
         this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
         this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26');
 
-        this.displayStaticBkgrd();
 
+        this.gradBkg.draw();
+        // this.mountBkg1.draw();
+        // this.mountBkg2.draw();
+        // this.mountBkg3.draw();
+    }
+
+    init() {
+        this.displayStaticBkgrd();
         this.generateOffScreenParticles();
-        // console.log(this.offScreenBkg.particles);
         
         this.keys = [];
-        // this.miniStars is being changed
-        // by star #shatter method
         this.miniStars = [];
         this.backgroundStars = [];
         this.stars = [];
@@ -183,7 +154,7 @@ class GameView {
 
     animate(time) {
         if (this.game.gameOver) {
-            console.log(this.game.gameOver);
+            this.gameOverMessage();
             this.stop();
         } else {
             const timeDelta = time - this.lastTime;
@@ -211,8 +182,6 @@ class GameView {
                 if (this.ambientBkg.prev[i].ttl === 0 ) {
                     this.ambientBkg.prev.splice(i, 1);
                 }
-
-                
             }
             
             this.miniStars.forEach((mini, i) => {
@@ -224,19 +193,14 @@ class GameView {
 
                 //  ###############   COMMENT ME BBACK IN !!!!
                 // ###### MOVING BKG
-            if (this.ticker === 10 || this.ticker % 175 === 0) {
+            if (this.ticker === 0 || this.ticker % 185 === 0) {
                 const x = Math.random() * 1200;
-
+                this.generateOffScreenParticles();
                 this.ambientBkg.generate(this.preloaded);
                 // console.log(this.ambientBkg.prev);
             }
             
-            this.ticker++;
-            // if (this.ticker % 195 === 0) {
-            //     const x = Math.random() * 1200;
-            //     // caps at about maximum 210-280 at once
-            //     this.ambientBkg.generate(70);
-            // }
+            
             
             // delete stars that have shrunk
             this.stars.forEach((star, index) => {
@@ -263,6 +227,8 @@ class GameView {
                 // console.log(this.stars);
                 // console.log(this.miniStars);
             }
+
+            this.ticker++;
         }
     }
 }
