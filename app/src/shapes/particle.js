@@ -7,8 +7,8 @@ class Particle {
         // x & y values are dimensions * random (0.0 - 1.0)
         // this.x = options.x;
         // this.y = options.y;
-        this.x = Math.random() * options.x -425;
-        this.y = Math.random() * options.y -425;
+        this.x = Math.floor(Math.random() * options.x) -425;
+        this.y = Math.floor(Math.random() * options.y) -425;
         this.radius = options.radius;
         this.color = options.color;
         this.ctx = options.ctx;
@@ -16,7 +16,7 @@ class Particle {
         this.friction = 0.8;
         this.velocity = {
             x: utils.randomIntFromRange(1, 5),
-            y: Math.random() * 3
+            y: Math.floor(Math.random() * 3)
             // x: options.velocity.x,
             // y: options.velocity.y
         };

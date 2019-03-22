@@ -62,10 +62,9 @@ class MovingObject {
         ctx.ellipse(
             this.pos[0], this.pos[1] - 26, this.radius * 2.5, this.radius * 2, 0, Math.PI * 2, false
         );
-        // ctx.ellipse(this.pos[0], this.pos[1], 2, 9, 0, Math.PI * 2, false);
-        // ctx.ellipse(
-        //     this.pos[0], this.pos[1] - 16, 3, 2, 0, Math.PI * 2, false
-        // );
+        
+        ctx.shadowColor = '#e3eaef';
+        ctx.shadowBlur = 4;
         ctx.closePath();
         ctx.fill();
     }

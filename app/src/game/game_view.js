@@ -32,6 +32,7 @@ class GameView {
         this.game = game;
         this.movingObject = this.game.addMovingObject();
         this.lastJump = new Date() / 1000;
+        this.fps = 0;
         // this.particles = [];
         this.init();
         this.keysPressed = this.keysPressed.bind(this);
@@ -48,8 +49,6 @@ class GameView {
         this.keys[e.keyCode] = true;
         e.preventDefault();
         const move = KEY_DOWN_MOVES[e.keyCode];
-        
-        // console.log(this.keys);
 
         // write a jump function
 
@@ -74,8 +73,6 @@ class GameView {
                 this.movingObject.jump(0, -25);
             }
         } 
-
-        // console.log(this.movingObject.velocity);
     }
 
     keysReleased(e) {
@@ -86,8 +83,6 @@ class GameView {
     
 
     bindKeyHandlers() {
-        const movingObject = this.movingObject;
-
         document.addEventListener('keydown', this.keysPressed, false);
 
         document.addEventListener('keyup', this.keysReleased, false);
@@ -100,8 +95,8 @@ class GameView {
     generateOffScreenParticles() {
         for (let i = 0; i < 70; i++) {
             this.preloaded.push(new Particle({
-                x: Math.random() * this.offScreenBkg.canvas.width, 
-                y: Math.random() * this.offScreenBkg.canvas.height,
+                x: Math.floor(Math.random() * this.offScreenBkg.canvas.width), 
+                y: Math.floor(Math.random() * this.offScreenBkg.canvas.height),
                 radius: Math.random() * 2,
                 color: `rgba(227, 234, 239, 1)`,
                 ctx: this.animatedCtx, 
@@ -116,12 +111,14 @@ class GameView {
         this.gradBkg = new GradientBkg(this.staticCtx, 
             { start: '#233345', end: '#12437b', middle: [] });
 
-        this.staticCtx.filter = 'blur(2px)';
+        // this.staticCtx.filter = 'blur(2px)';
         // this.gradBkg = new GradientBkg(this.staticCtx, 
         //     { start: '#2473ab', end: '#5b7983', middle: ['#1e528e'] });
-        this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
-        this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
-        this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
+
+        // this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
+        // this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
+        // this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
+
         this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26');
 
 
@@ -145,11 +142,26 @@ class GameView {
     start() {
         this.bindKeyHandlers();
         this.lastTime = 0;
+        this.currTime = new Date().getMilliseconds();
         requestAnimationFrame(this.animate.bind(this));
     }
 
     stop() {
         cancelAnimationFrame(this.animate.bind(this));
+    }
+
+    setFrames() {
+        // need to create initialize timer method;
+        // to track curr milliseconds
+        // set frame in attr and display in animate();
+        let framesInSecond = this.ticker;
+        while (true) {
+            if (this.currTime % 1000 === 0) {
+                this.fps = this.ticker - framesInSecond;
+                framesInSecond = this.ticker;
+                // console.log(framesInSecond);
+            }
+        }
     }
 
     animate(time) {
@@ -163,9 +175,8 @@ class GameView {
             
             this.game.step(timeDelta);
             this.game.draw(this.gameCtx);
-            // console.log(this.stars);
+            
             for (let i = 0; i < this.stars.length; i++) {
-                const star = this.stars[i];
                 this.stars[i].update();
                 if (this.stars[i].radius <= 0 ) {
                     this.stars.splice(i, 1);
@@ -194,10 +205,8 @@ class GameView {
                 //  ###############   COMMENT ME BBACK IN !!!!
                 // ###### MOVING BKG
             if (this.ticker === 0 || this.ticker % 185 === 0) {
-                const x = Math.random() * 1200;
-                this.generateOffScreenParticles();
+                // this.generateOffScreenParticles();
                 this.ambientBkg.generate(this.preloaded);
-                // console.log(this.ambientBkg.prev);
             }
             
             
@@ -224,10 +233,10 @@ class GameView {
                 });
                 this.stars.push(star);
                 this.game.addStar(star);
-                // console.log(this.stars);
-                // console.log(this.miniStars);
             }
 
+            // this.ctx.font = '20px Helvetica';
+            // this.ctx.fillText(`hello`, 100, 500);
             this.ticker++;
         }
     }

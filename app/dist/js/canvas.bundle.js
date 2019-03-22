@@ -17291,8 +17291,8 @@ function AmbientBkg(ctx, radius, color, prev) {
     this.color = color;
     this.gravity = 1;
     this.velocity = {
-        x: Math.random() * 2,
-        y: Math.random() * 1
+        x: Math.floor(Math.random() * 2),
+        y: Math.floor(Math.random() * 1)
     };
     this.ttl = 100;
     this.opacity = 1;
@@ -17577,10 +17577,9 @@ var MovingObject = function () {
             }
             ctx.ellipse(this.pos[0], this.pos[1], this.radius, this.radius * 9, 0, Math.PI * 2, false);
             ctx.ellipse(this.pos[0], this.pos[1] - 26, this.radius * 2.5, this.radius * 2, 0, Math.PI * 2, false);
-            // ctx.ellipse(this.pos[0], this.pos[1], 2, 9, 0, Math.PI * 2, false);
-            // ctx.ellipse(
-            //     this.pos[0], this.pos[1] - 16, 3, 2, 0, Math.PI * 2, false
-            // );
+
+            ctx.shadowColor = '#e3eaef';
+            ctx.shadowBlur = 4;
             ctx.closePath();
             ctx.fill();
         }
@@ -17777,9 +17776,9 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _circle = __webpack_require__(/*! ../shapes/circle.js */ "./src/shapes/circle.js");
 
-var _star2 = __webpack_require__(/*! ../shapes/star */ "./src/shapes/star.js");
+var _star = __webpack_require__(/*! ../shapes/star */ "./src/shapes/star.js");
 
-var _star3 = _interopRequireDefault(_star2);
+var _star2 = _interopRequireDefault(_star);
 
 var _ministar = __webpack_require__(/*! ../shapes/ministar */ "./src/shapes/ministar.js");
 
@@ -17832,6 +17831,7 @@ var GameView = function () {
         this.game = game;
         this.movingObject = this.game.addMovingObject();
         this.lastJump = new Date() / 1000;
+        this.fps = 0;
         // this.particles = [];
         this.init();
         this.keysPressed = this.keysPressed.bind(this);
@@ -17851,8 +17851,6 @@ var GameView = function () {
             this.keys[e.keyCode] = true;
             e.preventDefault();
             var move = KEY_DOWN_MOVES[e.keyCode];
-
-            // console.log(this.keys);
 
             // write a jump function
 
@@ -17877,8 +17875,6 @@ var GameView = function () {
                     this.movingObject.jump(0, -25);
                 }
             }
-
-            // console.log(this.movingObject.velocity);
         }
     }, {
         key: 'keysReleased',
@@ -17890,8 +17886,6 @@ var GameView = function () {
     }, {
         key: 'bindKeyHandlers',
         value: function bindKeyHandlers() {
-            var movingObject = this.movingObject;
-
             document.addEventListener('keydown', this.keysPressed, false);
 
             document.addEventListener('keyup', this.keysReleased, false);
@@ -17906,8 +17900,8 @@ var GameView = function () {
         value: function generateOffScreenParticles() {
             for (var i = 0; i < 70; i++) {
                 this.preloaded.push(new _particle2.default({
-                    x: Math.random() * this.offScreenBkg.canvas.width,
-                    y: Math.random() * this.offScreenBkg.canvas.height,
+                    x: Math.floor(Math.random() * this.offScreenBkg.canvas.width),
+                    y: Math.floor(Math.random() * this.offScreenBkg.canvas.height),
                     radius: Math.random() * 2,
                     color: 'rgba(227, 234, 239, 1)',
                     ctx: this.animatedCtx,
@@ -17922,12 +17916,14 @@ var GameView = function () {
             // { start: '#171e26', end: '#3f586b', middle: [] }); original
             this.gradBkg = new GradientBkg(this.staticCtx, { start: '#233345', end: '#12437b', middle: [] });
 
-            this.staticCtx.filter = 'blur(2px)';
+            // this.staticCtx.filter = 'blur(2px)';
             // this.gradBkg = new GradientBkg(this.staticCtx, 
             //     { start: '#2473ab', end: '#5b7983', middle: ['#1e528e'] });
-            this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
-            this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
-            this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
+
+            // this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
+            // this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
+            // this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
+
             this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26');
 
             this.gradBkg.draw();
@@ -17952,12 +17948,28 @@ var GameView = function () {
         value: function start() {
             this.bindKeyHandlers();
             this.lastTime = 0;
+            this.currTime = new Date().getMilliseconds();
             requestAnimationFrame(this.animate.bind(this));
         }
     }, {
         key: 'stop',
         value: function stop() {
             cancelAnimationFrame(this.animate.bind(this));
+        }
+    }, {
+        key: 'setFrames',
+        value: function setFrames() {
+            // need to create initialize timer method;
+            // to track curr milliseconds
+            // set frame in attr and display in animate();
+            var framesInSecond = this.ticker;
+            while (true) {
+                if (this.currTime % 1000 === 0) {
+                    this.fps = this.ticker - framesInSecond;
+                    framesInSecond = this.ticker;
+                    // console.log(framesInSecond);
+                }
+            }
         }
     }, {
         key: 'animate',
@@ -17974,9 +17986,8 @@ var GameView = function () {
 
                 this.game.step(timeDelta);
                 this.game.draw(this.gameCtx);
-                // console.log(this.stars);
+
                 for (var i = 0; i < this.stars.length; i++) {
-                    var star = this.stars[i];
                     this.stars[i].update();
                     if (this.stars[i].radius <= 0) {
                         this.stars.splice(i, 1);
@@ -18002,10 +18013,8 @@ var GameView = function () {
                 //  ###############   COMMENT ME BBACK IN !!!!
                 // ###### MOVING BKG
                 if (this.ticker === 0 || this.ticker % 185 === 0) {
-                    var x = Math.random() * 1200;
-                    this.generateOffScreenParticles();
+                    // this.generateOffScreenParticles();
                     this.ambientBkg.generate(this.preloaded);
-                    // console.log(this.ambientBkg.prev);
                 }
 
                 // delete stars that have shrunk
@@ -18022,18 +18031,18 @@ var GameView = function () {
                 });
 
                 if (this.ticker % 155 === 0) {
-                    var _x = Math.random() * 1200;
-                    var _star = new _star3.default({
-                        x: _x, y: -100, radius: 14, // 8,
+                    var x = Math.random() * 1200;
+                    var star = new _star2.default({
+                        x: x, y: -100, radius: 14, // 8,
                         color: 'white', ctx: this.animatedCtx,
                         miniStars: this.miniStars
                     });
-                    this.stars.push(_star);
-                    this.game.addStar(_star);
-                    // console.log(this.stars);
-                    // console.log(this.miniStars);
+                    this.stars.push(star);
+                    this.game.addStar(star);
                 }
 
+                // this.ctx.font = '20px Helvetica';
+                // this.ctx.fillText(`hello`, 100, 500);
                 this.ticker++;
             }
         }
@@ -18345,8 +18354,8 @@ var Particle = function () {
         // x & y values are dimensions * random (0.0 - 1.0)
         // this.x = options.x;
         // this.y = options.y;
-        this.x = Math.random() * options.x - 425;
-        this.y = Math.random() * options.y - 425;
+        this.x = Math.floor(Math.random() * options.x) - 425;
+        this.y = Math.floor(Math.random() * options.y) - 425;
         this.radius = options.radius;
         this.color = options.color;
         this.ctx = options.ctx;
@@ -18354,7 +18363,7 @@ var Particle = function () {
         this.friction = 0.8;
         this.velocity = {
             x: utils.randomIntFromRange(1, 5),
-            y: Math.random() * 3
+            y: Math.floor(Math.random() * 3)
             // x: options.velocity.x,
             // y: options.velocity.y
         };
@@ -18477,45 +18486,45 @@ var Star = function () {
             this.radius -= 3;
             // add back in for particles
             // ############ COMMENT BACK FOR MINISTARS
-            // for (let i = 0; i < 5; i++) {
-            //     arr.push(new MiniStar({
-            //         x: this.x,
-            //         y: this.y,
-            //         radius: 2,
-            //         color: `rgba(227, 234, 239, 1)`,
-            //         ctx: this.ctx
-            //     }));
-            // }
-            // for (let i = 0; i < 4; i++) {
-            //     arr.push(new MiniStar({
-            //         x: this.x,
-            //         y: this.y,
-            //         radius: 1,
-            //         color: `rgba(227, 234, 239, 1)`,
-            //         ctx: this.ctx
-            //     }));
-            // }
-            // for (let i = 0; i < 4; i++) {
-            //     arr.push(new MiniStar({
-            //         x: this.x,
-            //         y: this.y,
-            //         purp: true,
-            //         radius: 1,
-            //         color: `rgba(227, 234, 239, 1)`,
-            //         ctx: this.ctx
-            //     }));
-            // }
+            for (var i = 0; i < 5; i++) {
+                arr.push(new _ministar2.default({
+                    x: this.x,
+                    y: this.y,
+                    radius: 2,
+                    color: 'rgba(227, 234, 239, 1)',
+                    ctx: this.ctx
+                }));
+            }
+            for (var _i = 0; _i < 4; _i++) {
+                arr.push(new _ministar2.default({
+                    x: this.x,
+                    y: this.y,
+                    radius: 1,
+                    color: 'rgba(227, 234, 239, 1)',
+                    ctx: this.ctx
+                }));
+            }
+            for (var _i2 = 0; _i2 < 4; _i2++) {
+                arr.push(new _ministar2.default({
+                    x: this.x,
+                    y: this.y,
+                    purp: true,
+                    radius: 1,
+                    color: 'rgba(227, 234, 239, 1)',
+                    ctx: this.ctx
+                }));
+            }
 
-            // for (let i = 0; i < 4; i++) {
-            //     arr.push(new MiniStar({
-            //         x: this.x,
-            //         y: this.y,
-            //         yell: true,
-            //         radius: 1,
-            //         color: `rgba(227, 234, 239, 1)`,
-            //         ctx: this.ctx
-            //     }));
-            // }
+            for (var _i3 = 0; _i3 < 4; _i3++) {
+                arr.push(new _ministar2.default({
+                    x: this.x,
+                    y: this.y,
+                    yell: true,
+                    radius: 1,
+                    color: 'rgba(227, 234, 239, 1)',
+                    ctx: this.ctx
+                }));
+            }
 
             // console.log(arr);
         }

@@ -8,8 +8,8 @@ function AmbientBkg (ctx, radius, color, prev) {
     this.color = color;
     this.gravity = 1;
     this.velocity = {
-        x: Math.random() * 2,
-        y: Math.random() * 1
+        x: Math.floor(Math.random() * 2),
+        y: Math.floor(Math.random() * 1)
     };
     this.ttl = 100;
     this.opacity = 1;
