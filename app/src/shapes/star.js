@@ -41,45 +41,45 @@ class Star {
         this.radius -= 3;
         // add back in for particles
         // ############ COMMENT BACK FOR MINISTARS
-        // for (let i = 0; i < 5; i++) {
-        //     arr.push(new MiniStar({
-        //         x: this.x,
-        //         y: this.y,
-        //         radius: 2,
-        //         color: `rgba(227, 234, 239, 1)`,
-        //         ctx: this.ctx
-        //     }));
-        // }
-        // for (let i = 0; i < 4; i++) {
-        //     arr.push(new MiniStar({
-        //         x: this.x,
-        //         y: this.y,
-        //         radius: 1,
-        //         color: `rgba(227, 234, 239, 1)`,
-        //         ctx: this.ctx
-        //     }));
-        // }
-        // for (let i = 0; i < 4; i++) {
-        //     arr.push(new MiniStar({
-        //         x: this.x,
-        //         y: this.y,
-        //         purp: true,
-        //         radius: 1,
-        //         color: `rgba(227, 234, 239, 1)`,
-        //         ctx: this.ctx
-        //     }));
-        // }
+        for (let i = 0; i < 5; i++) {
+            arr.push(new MiniStar({
+                x: this.x,
+                y: this.y,
+                radius: 2,
+                color: `rgba(227, 234, 239, 1)`,
+                ctx: this.ctx
+            }));
+        }
+        for (let i = 0; i < 4; i++) {
+            arr.push(new MiniStar({
+                x: this.x,
+                y: this.y,
+                radius: 1,
+                color: `rgba(227, 234, 239, 1)`,
+                ctx: this.ctx
+            }));
+        }
+        for (let i = 0; i < 4; i++) {
+            arr.push(new MiniStar({
+                x: this.x,
+                y: this.y,
+                purp: true,
+                radius: 1,
+                color: `rgba(227, 234, 239, 1)`,
+                ctx: this.ctx
+            }));
+        }
         
-        // for (let i = 0; i < 4; i++) {
-        //     arr.push(new MiniStar({
-        //         x: this.x,
-        //         y: this.y,
-        //         yell: true,
-        //         radius: 1,
-        //         color: `rgba(227, 234, 239, 1)`,
-        //         ctx: this.ctx
-        //     }));
-        // }
+        for (let i = 0; i < 4; i++) {
+            arr.push(new MiniStar({
+                x: this.x,
+                y: this.y,
+                yell: true,
+                radius: 1,
+                color: `rgba(227, 234, 239, 1)`,
+                ctx: this.ctx
+            }));
+        }
 
         // console.log(arr);
     }
