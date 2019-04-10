@@ -60,7 +60,7 @@ class MiniStar {
     update() {
         this.draw();
 
-        if (this.y + this.radius + this.velocity.y > 800) {
+        if (this.y + this.radius + this.velocity.y > 740) {
             this.velocity.y = -this.velocity.y * this.friction;
         } else {
             this.velocity.y += this.gravity;

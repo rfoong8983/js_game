@@ -80,8 +80,6 @@ class Star {
                 ctx: this.ctx
             }));
         }
-
-        // console.log(arr);
     }
 
     draw() {
@@ -102,7 +100,7 @@ class Star {
         this.draw();
 
         // removed radius from calc so star would hit floor
-        if (this.y + this.velocity.y > 800) {
+        if (this.y + this.velocity.y > 740) {
             // this.y = -this.velocity.y;
             this.velocity.y = -this.velocity.y * this.friction;
             this.shatter(this.miniStars);

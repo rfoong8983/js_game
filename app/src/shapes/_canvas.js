@@ -74,7 +74,7 @@ function init() {
 
 // let arr = generateArray([]);
 let test = generateCircles(180, 2, 1, Circle, c);
-console.log(test);
+// console.log(test);
 
 // Animation Loop
 function animate() {

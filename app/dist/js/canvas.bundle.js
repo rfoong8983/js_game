@@ -17366,7 +17366,7 @@ function GradientBkg(ctx, stopColors) {
     this.startColor = stopColors.start;
     this.endColor = stopColors.end;
     this.middle = stopColors.middle;
-    this.bkg = this.ctx.createLinearGradient(0, 0, 0, 800);
+    this.bkg = this.ctx.createLinearGradient(0, 0, 0, 793);
 }
 
 GradientBkg.prototype.draw = function () {
@@ -17383,14 +17383,95 @@ GradientBkg.prototype.draw = function () {
     });
     this.bkg.addColorStop(1, this.endColor);
     this.ctx.fillStyle = this.bkg;
-    this.ctx.fillRect(0, 0, 1200, 800);
+    this.ctx.fillRect(0, 0, 1200, 793);
     // this.bkg.addColorStop(0, this.startColor);
     // this.bkg.addColorStop(1, this.endColor);
     // this.ctx.fillStyle = this.bkg;
-    // this.ctx.fillRect(0, 0, 1200, 800);
+    // this.ctx.fillRect(0, 0, 1200, 793);
 };
 
 module.exports = GradientBkg;
+
+/***/ }),
+
+/***/ "./src/background/house.js":
+/*!*********************************!*\
+  !*** ./src/background/house.js ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+function House(ctx) {
+    this.ctx = ctx;
+    this.image = new Image();
+    this.image.onload = function () {
+        this.imageReady = true;
+    };
+    this.image.src = '../src/images/Tilesets/house_in_out.png';
+    console.log(this.image.onload);
+    console.log(this.imageReady);
+}
+
+House.prototype.draw = function () {
+    // this.ctx.fillStyle = 'white';
+    // this.ctx.fillRect(100, 100, 40, 50);
+    debugger;
+    if (!this.imageReady) return;
+    // console.log(this.image);
+    console.log(this.imageReady);
+    this.ctx.drawImage(this.image, 0, 0);
+};
+
+module.exports = House;
+
+/***/ }),
+
+/***/ "./src/background/landscape.js":
+/*!*************************************!*\
+  !*** ./src/background/landscape.js ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var Landscape = function () {
+    function Landscape(ctx) {
+        var _this = this;
+
+        _classCallCheck(this, Landscape);
+
+        this.ctx = ctx;
+        this.image = new Image();
+        this.image.onload = function () {
+            return _this.imageReady = true;
+        };
+        this.image.src = '../src/images/forest/Preview/Background.png';
+        // this.image.src = '/Users/ryan/documents/projects/js/js_game/app/src/Background.png';
+        // this.image.src = 'https://mdn.mozillademos.org/files/5397/rhino.jpg';
+        this.draw = this.draw.bind(this);
+    }
+
+    _createClass(Landscape, [{
+        key: 'draw',
+        value: function draw() {
+            if (!this.imageReady) return;
+            this.ctx.drawImage(this.image, 0, 0);
+        }
+    }]);
+
+    return Landscape;
+}();
+
+module.exports = Landscape;
 
 /***/ }),
 
@@ -17424,9 +17505,9 @@ MountainsBkg.prototype.draw = function () {
         var width = 1200 / this.amount;
         this.ctx.beginPath();
         this.ctx.moveTo(i * width, 1200);
-        this.ctx.lineTo(i * width + width + 325, 800);
-        this.ctx.lineTo(i * width + width / 2, 800 - this.height);
-        this.ctx.lineTo(i * width - 325, 800);
+        this.ctx.lineTo(i * width + width + 325, 793);
+        this.ctx.lineTo(i * width + width / 2, 793 - this.height);
+        this.ctx.lineTo(i * width - 325, 793);
         this.ctx.fillStyle = this.color;
         this.ctx.fill();
     }
@@ -17456,7 +17537,7 @@ function OffScreenCtx(scWidth, scHeight, divideBy) {
     this.canvas = document.createElement("canvas");
     this.canvas.width = Math.floor(scWidth / divideBy);
     this.canvas.height = Math.floor(scHeight / divideBy);
-    this.ctx = this.canvas.getContext('2d');
+    this.ctx = this.canvas.getContext('2d', { alpha: false });
     this.particles = [];
 }
 
@@ -17538,10 +17619,6 @@ var MovingObject = function () {
             var dist = utils.distance(this.pos[0], this.pos[1], obj2.x, obj2.y);
 
             if (dist <= this.radius + obj2.radius) {
-                // console.log(dist < this.radius + 15 + obj2.radius);
-                // console.log(Math.round(dist));
-                // console.log(Math.round(this.radius) + Math.floor(obj2.radius));
-                // console.log(dist < this.radius + Math.floor(obj2.radius));
                 return true;
             }
 
@@ -17562,11 +17639,11 @@ var MovingObject = function () {
         value: function draw(ctx) {
             ctx.fillStyle = this.color;
             ctx.beginPath();
-            if (this.pos[1] < 780) {
+            if (this.pos[1] < 720) {
                 this.pos[1] += this.gravity;
-            } else if (this.pos[1] + this.velocity[1] + this.gravity >= 780) {
+            } else if (this.pos[1] + this.velocity[1] + this.gravity >= 720) {
                 this.velocity[1] = 0;
-                this.pos[1] = 780;
+                this.pos[1] = 720;
             }
             if (this.pos[0] + this.velocity[0] + this.radius >= 1200) {
                 this.velocity[0] = 0;
@@ -17645,7 +17722,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var X = 1200;
-var Y = 800;
+var Y = 793;
 var FPS = 32;
 
 var Game = function () {
@@ -17705,7 +17782,7 @@ var Game = function () {
         key: 'addMovingObject',
         value: function addMovingObject() {
             var movingObject = new _moving_object2.default({
-                pos: [10, 790], // add radius later to acct for object height
+                pos: [10, 560], // add radius later to acct for object height
                 game: this,
                 velocity: [0, 0],
                 color: 'white',
@@ -17774,34 +17851,21 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _circle = __webpack_require__(/*! ../shapes/circle.js */ "./src/shapes/circle.js");
-
 var _star = __webpack_require__(/*! ../shapes/star */ "./src/shapes/star.js");
 
 var _star2 = _interopRequireDefault(_star);
-
-var _ministar = __webpack_require__(/*! ../shapes/ministar */ "./src/shapes/ministar.js");
-
-var _ministar2 = _interopRequireDefault(_ministar);
 
 var _particle = __webpack_require__(/*! ../shapes/particle */ "./src/shapes/particle.js");
 
 var _particle2 = _interopRequireDefault(_particle);
 
-var _moving_object = __webpack_require__(/*! ../entities/moving_object */ "./src/entities/moving_object.js");
-
-var _moving_object2 = _interopRequireDefault(_moving_object);
-
-var _utils = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
-
-var utils = _interopRequireWildcard(_utils);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+// import Landscape from '../background/landscape';
+var Landscape = __webpack_require__(/*! ../background/landscape */ "./src/background/landscape.js");
+var House = __webpack_require__(/*! ../background/house */ "./src/background/house.js");
 var GradientBkg = __webpack_require__(/*! ../background/gradient_bkgrd */ "./src/background/gradient_bkgrd.js");
 var MountainsBkg = __webpack_require__(/*! ../background/mountains_bkgrd */ "./src/background/mountains_bkgrd.js");
 var AmbientBkg = __webpack_require__(/*! ../background/ambient_bkgrd */ "./src/background/ambient_bkgrd.js");
@@ -17820,12 +17884,12 @@ var KEY_UP_MOVES = {
 };
 
 var GameView = function () {
-    function GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx, animatedCanvas) {
+    function GameView(game, staticCtx, animatedCtx, offScreenCtx) {
         _classCallCheck(this, GameView);
 
         this.staticCtx = staticCtx;
         this.animatedCtx = animatedCtx;
-        this.gameCtx = gameCtx;
+        // this.gameCtx = gameCtx;
         this.offScreenBkg = offScreenCtx;
         this.preloaded = [];
         this.game = game;
@@ -17833,7 +17897,7 @@ var GameView = function () {
         this.lastJump = new Date() / 1000;
         this.fps = 0;
         // this.particles = [];
-        this.init();
+        // this.init();
         this.keysPressed = this.keysPressed.bind(this);
         this.keysReleased = this.keysReleased.bind(this);
         this.bindKeyHandlers = this.bindKeyHandlers.bind(this);
@@ -17914,26 +17978,23 @@ var GameView = function () {
         value: function displayStaticBkgrd() {
             // this.gradBkg = new GradientBkg(this.staticCtx, 
             // { start: '#171e26', end: '#3f586b', middle: [] }); original
-            this.gradBkg = new GradientBkg(this.staticCtx, { start: '#233345', end: '#12437b', middle: [] });
-
-            // this.staticCtx.filter = 'blur(2px)';
             // this.gradBkg = new GradientBkg(this.staticCtx, 
-            //     { start: '#2473ab', end: '#5b7983', middle: ['#1e528e'] });
+            //     { start: '#233345', end: '#12437b', middle: [] });
 
-            // this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
-            // this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
-            // this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
-
-            this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26');
-
-            this.gradBkg.draw();
-            // this.mountBkg1.draw();
-            // this.mountBkg2.draw();
-            // this.mountBkg3.draw();
+            // this.landscape = new Landscape(this.staticCtx);
+            // this.landscape.draw();
+            // this.house = new House(this.staticCtx);
+            // this.house.draw();
         }
     }, {
         key: 'init',
         value: function init() {
+            console.log("initialized");
+            this.house = new House(this.staticCtx);
+            this.house.draw();
+            debugger;
+            console.log(this.house);
+            this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26');
             this.displayStaticBkgrd();
             this.generateOffScreenParticles();
 
@@ -17948,28 +18009,13 @@ var GameView = function () {
         value: function start() {
             this.bindKeyHandlers();
             this.lastTime = 0;
-            this.currTime = new Date().getMilliseconds();
+            this.init();
             requestAnimationFrame(this.animate.bind(this));
         }
     }, {
         key: 'stop',
         value: function stop() {
             cancelAnimationFrame(this.animate.bind(this));
-        }
-    }, {
-        key: 'setFrames',
-        value: function setFrames() {
-            // need to create initialize timer method;
-            // to track curr milliseconds
-            // set frame in attr and display in animate();
-            var framesInSecond = this.ticker;
-            while (true) {
-                if (this.currTime % 1000 === 0) {
-                    this.fps = this.ticker - framesInSecond;
-                    framesInSecond = this.ticker;
-                    // console.log(framesInSecond);
-                }
-            }
         }
     }, {
         key: 'animate',
@@ -17981,11 +18027,11 @@ var GameView = function () {
                 this.stop();
             } else {
                 var timeDelta = time - this.lastTime;
-                this.animatedCtx.clearRect(0, 0, 1200, 800);
+                this.animatedCtx.clearRect(0, 0, 1200, 793);
                 requestAnimationFrame(this.animate.bind(this));
 
                 this.game.step(timeDelta);
-                this.game.draw(this.gameCtx);
+                this.game.draw(this.animatedCtx);
 
                 for (var i = 0; i < this.stars.length; i++) {
                     this.stars[i].update();
@@ -18083,7 +18129,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var gameCanvas = document.getElementById('game');
 
     var scWidth = 1200;
-    var scHeight = 800;
+    var scHeight = 793;
     staticCanvas.width = scWidth;
     staticCanvas.height = scHeight;
     animatedCanvas.width = scWidth;
@@ -18091,118 +18137,17 @@ document.addEventListener('DOMContentLoaded', function () {
     gameCanvas.width = scWidth;
     gameCanvas.height = scHeight;
 
+    // const staticCtx = staticCanvas.getContext('2d', { alpha: false });
     var staticCtx = staticCanvas.getContext('2d');
     var animatedCtx = animatedCanvas.getContext('2d');
-    var gameCtx = gameCanvas.getContext('2d');
+    // const gameCtx = gameCanvas.getContext('2d');
     var offScreenCtx = new OffScreenCtx(staticCanvas.width, staticCanvas.height, 2);
 
     var game = new _game2.default();
-    new _game_view2.default(game, staticCtx, animatedCtx, gameCtx, offScreenCtx).start();
+    // new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx).start();
+    new _game_view2.default(game, staticCtx, animatedCtx, offScreenCtx).start();
     // new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx);
 });
-
-/***/ }),
-
-/***/ "./src/shapes/circle.js":
-/*!******************************!*\
-  !*** ./src/shapes/circle.js ***!
-  \******************************/
-/*! no static exports found */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.generateCircles = exports.Circle = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _utils = __webpack_require__(/*! ../utils/utils */ "./src/utils/utils.js");
-
-var utils = _interopRequireWildcard(_utils);
-
-function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var Circle = exports.Circle = function () {
-    function Circle(options) {
-        _classCallCheck(this, Circle);
-
-        this.x = options.x;
-        this.y = options.y;
-        this.radius = options.radius;
-        this.minRadius = options.radius;
-        this.dx = options.dx;
-        this.dy = options.dy;
-        this.color = options.color;
-        this.ctx = options.ctx;
-    }
-
-    _createClass(Circle, [{
-        key: 'draw',
-        value: function draw(ctx) {
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2, false);
-            ctx.fillStyle = this.color;
-            ctx.fill();
-        }
-    }, {
-        key: 'update',
-        value: function update(ctx) {
-            if (this.x + this.radius > 1200 || this.x - this.radius < 0) {
-                this.dx = -this.dx;
-            }
-            if (this.y + this.radius > 800 || this.y - this.radius < 0) {
-                this.dy = -this.dy;
-            }
-
-            // interactivity
-            // if (mouse.x - this.x < 50 && mouse.x - this.x > -50
-            //     && mouse.y - this.y < 50 && mouse.y - this.y > - 50) {
-            //     if (this.radius < 70) {
-            //         this.radius +=3;
-            //     }
-            // }
-
-            this.x += this.dx;
-            this.y += this.dy;
-            this.draw(ctx);
-        }
-    }]);
-
-    return Circle;
-}();
-
-var generateCircles = exports.generateCircles = function generateCircles(options) {
-    // console.log(options.ctx);
-    var colorArray = ['#e7fff7', '#98e8ff', '#45a2e8', '#2278ff', '#005ff5'];
-
-    var result = [];
-
-    for (var i = 0; i < options.size; i++) {
-        var color = colorArray[Math.floor(Math.random() * colorArray.length)];
-        var x = Math.random() * (1200 - options.radius * 2) + options.radius;
-        var y = Math.random() * (800 - options.radius * 2) + options.radius;
-        var dx = void 0;
-        var dy = void 0;
-        if (options.endSpeed) {
-            dx = utils.randomIntFromRange(options.speed, options.endSpeed);
-            dy = utils.randomIntFromRange(options.speed, options.endSpeed);
-        } else {
-            dx = (Math.random() - 0.5) * options.speed;
-            dy = (Math.random() - 0.5) * options.speed;
-        }
-        var radius = options.radius;
-        var ctx = options.ctx;
-        result.push(new Circle({ x: x, y: y, radius: radius, dx: dx, dy: dy, color: color, ctx: ctx }));
-    }
-
-    return result;
-};
 
 /***/ }),
 
@@ -18294,7 +18239,7 @@ var MiniStar = function () {
         value: function update() {
             this.draw();
 
-            if (this.y + this.radius + this.velocity.y > 800) {
+            if (this.y + this.radius + this.velocity.y > 740) {
                 this.velocity.y = -this.velocity.y * this.friction;
             } else {
                 this.velocity.y += this.gravity;
@@ -18525,8 +18470,6 @@ var Star = function () {
                     ctx: this.ctx
                 }));
             }
-
-            // console.log(arr);
         }
     }, {
         key: 'draw',
@@ -18549,7 +18492,7 @@ var Star = function () {
             this.draw();
 
             // removed radius from calc so star would hit floor
-            if (this.y + this.velocity.y > 800) {
+            if (this.y + this.velocity.y > 740) {
                 // this.y = -this.velocity.y;
                 this.velocity.y = -this.velocity.y * this.friction;
                 this.shatter(this.miniStars);

@@ -14,9 +14,9 @@ MountainsBkg.prototype.draw = function() {
         const width = 1200 / this.amount;
         this.ctx.beginPath();
         this.ctx.moveTo(i * width, 1200);
-        this.ctx.lineTo(i * width + width + 325, 800);
-        this.ctx.lineTo(i * width + width / 2, 800 - this.height);
-        this.ctx.lineTo(i * width - 325, 800);
+        this.ctx.lineTo(i * width + width + 325, 793);
+        this.ctx.lineTo(i * width + width / 2, 793 - this.height);
+        this.ctx.lineTo(i * width - 325, 793);
         this.ctx.fillStyle = this.color;
         this.ctx.fill();
     }
