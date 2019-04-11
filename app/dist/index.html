@@ -75,6 +75,7 @@
             z-index: 3;
             border: 1px solid white;
             border-radius: 3px;
+            text-decoration: none;
             color: white;
             display: flex;
             justify-content: center;
@@ -117,7 +118,9 @@
             background-repeat: no-repeat;
             background-position: center;
             transition: ease-in .3s;
+            outline: none;
         }
+
         #plus:hover, #minus:hover, #play:hover, #pause:hover {
             filter: invert(100);
         }
@@ -134,15 +137,29 @@
             flex-direction: column;
             justify-content: center;
             text-align: center;
+            transition: 0.2s ease-out;
+            color: white;
+            text-decoration: none;
         }
 
         #retry {
             text-decoration: none;
             transition: 0.2s ease-in-out;
-            color: white;
+            color: rgb(186, 128, 123);
         }
         #retry:hover {
-            color: rgb(77, 77, 210);
+            color: rgb(203, 63, 53);
+        }
+
+        a {
+            outline: none;
+            text-decoration: none;
+            transition: 0.2s ease-out;
+            color: white;
+        }
+
+        .redlink:hover { 
+            color: rgb(203, 63, 53);
         }
         
     </style>
@@ -158,14 +175,14 @@
                 <div id="gameMessages">
                     <div id="" class="gameOver hidden">
                         <a>Unfortunately, your character has expired prior to returning home.</a>
-                        <a id="retry" href="./index.html">Try again?</a>
+                        <a id="retry" class="redlink" href="./index.html">Try again?</a>
                     </div>
                     <div id="visible" class="startBox hidden">
                         <a>You decided to walk home today? What could go wrong? Press any key to start (Left: A, Right: D).</a>
                     </div>
                     <div id="" class="winBox hidden">
                         <a>You've made it home! Time for a nap.</a>
-                        <a id="retry" href="./index.html">Play again? Click here.</a>
+                        <a id="retry" class="redlink" href="./index.html">Play again? Click here.</a>
                     </div>
                 </div>
                 <div id="canvases">

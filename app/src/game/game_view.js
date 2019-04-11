@@ -69,18 +69,18 @@ class GameView {
             // } else {
             //     this.movingObject.jump(2, 25);
             // }
-            this.movingObject.power([4, 0]);
+            this.movingObject.power([2, 0]);
         } else if (this.keys[87] && this.keys[65]) {
             // if (new Date() / 1000 - this.lastJump > 2) {
             //     this.movingObject.jump(-2, -25);
             // } else {
             //     this.movingObject.jump(-2, 25);
             // }
-            this.movingObject.power([-4, 0]);
+            this.movingObject.power([-2, 0]);
         } else if (this.keys[65]) {
-            this.movingObject.power([-4, 0]);
+            this.movingObject.power([-2, 0]);
         } else if (this.keys[68]) {
-            this.movingObject.power([4, 0]);
+            this.movingObject.power([2, 0]);
         } else if (this.keys[87]) {
             // if (new Date() / 1000 - this.lastJump > 2) {
             //     this.movingObject.jump(0, -25);
@@ -131,7 +131,6 @@ class GameView {
     }
 
     init() {
-        console.log("initialized");
         
         // debugger
         // console.log(this.house);
@@ -156,13 +155,32 @@ class GameView {
 
     stop() {
         cancelAnimationFrame(this.animate.bind(this));
+        const link = document.getElementById('retry');
+        setInterval(() => {
+            if (link.id === 'retry') {
+                link.id = '';
+            } else {
+                link.id = 'retry';
+            }
+            // if (this.gameOverBox.classList.contains('blink')) {
+            //     this.gameOverBox.classList.remove('blink');
+            //     console.log('no blink');
+            //     console.log(this.gameOverBox.classList);
+            //     console.log(this.gameOverBox.id);
+            // } else {
+            //     this.gameOverBox.classList.add('blink');
+            //     console.log('blink');
+            //     console.log(this.gameOverBox.classList);
+            //     console.log(this.gameOverBox.id);
+            // }
+        }, 1200);
     }
 
 
     animate(time) {
         if (this.game.gameOver) {
             this.gameOverMessage();
-            this.stop();
+            this.stop(); 
         }
         else if (this.movingObject.pos[0] >= 1074) {
             this.winMessage();
@@ -229,10 +247,8 @@ class GameView {
                     this.stars.splice(index, 1);
                 }
             });
-            console.log('game.stars: ', this.game.stars.length);
-            console.log('stars: ', this.stars.length);
+            
             this.game.stars.forEach((star, index) => {
-                console.log(this.game.stars.length);
                 if (star.x > 1200 || star.x < 0) {
                     this.game.stars.splice(index, 1);
                 }

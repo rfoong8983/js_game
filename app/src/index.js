@@ -25,11 +25,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const game = new Game();
     // new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx).start();
     const play = document.getElementById('play');
+    const pause = document.getElementById('pause');
     let bool = true;
     document.addEventListener('keydown', function() {
         if (bool) {
             bool = false;
             new GameView(game, staticCtx, animatedCtx, offScreenCtx, bool).start();
+            play.click();
+        }
+    });
+
+    document.addEventListener('keydown', e => {
+        if (e.key === 'm') {
+            pause.click();
+        } else if (e.key === 'p') {
             play.click();
         }
     });
