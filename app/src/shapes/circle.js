@@ -23,7 +23,7 @@ export class Circle {
         if (this.x + this.radius > 1200 || this.x - this.radius < 0) {
             this.dx = -this.dx;
         }
-        if (this.y + this.radius > 800 || this.y - this.radius < 0) {
+        if (this.y + this.radius > 793 || this.y - this.radius < 0) {
             this.dy = -this.dy;
         }
 
@@ -57,7 +57,7 @@ export const generateCircles = function(options) {
     for (let i = 0; i < options.size; i++) {
         const color = colorArray[Math.floor(Math.random() * colorArray.length)];
         const x = Math.random() * (1200 - options.radius * 2) + options.radius;
-        const y = Math.random() * (800 - options.radius * 2) + options.radius;
+        const y = Math.random() * (793 - options.radius * 2) + options.radius;
         let dx;
         let dy;
         if (options.endSpeed) {

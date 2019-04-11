@@ -23,10 +23,6 @@ class MovingObject {
         
         
         if (dist <= this.radius + obj2.radius) {
-            // console.log(dist < this.radius + 15 + obj2.radius);
-            // console.log(Math.round(dist));
-            // console.log(Math.round(this.radius) + Math.floor(obj2.radius));
-            // console.log(dist < this.radius + Math.floor(obj2.radius));
             return true;
         }
 
@@ -45,11 +41,11 @@ class MovingObject {
     draw(ctx) {
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        if (this.pos[1] < 780) {
+        if (this.pos[1] < 720) {
             this.pos[1] += this.gravity;
-        } else if (this.pos[1] + this.velocity[1] + this.gravity >= 780) {
+        } else if (this.pos[1] + this.velocity[1] + this.gravity >= 720) {
             this.velocity[1] = 0;
-            this.pos[1] = 780;
+            this.pos[1] = 720;
         } 
         if (this.pos[0] + this.velocity[0] + this.radius >= 1200) {
             this.velocity[0] = 0;

@@ -1,9 +1,8 @@
-import { Circle, generateCircles } from '../shapes/circle.js';
 import Star from '../shapes/star';
-import MiniStar from '../shapes/ministar';
 import Particle from '../shapes/particle';
-import MovingObject from '../entities/moving_object';
-import * as utils from '../utils/utils';
+// import Landscape from '../background/landscape';
+const Landscape = require('../background/landscape');
+const House = require('../background/house');
 const GradientBkg = require('../background/gradient_bkgrd');
 const MountainsBkg = require('../background/mountains_bkgrd');
 const AmbientBkg = require('../background/ambient_bkgrd');
@@ -23,22 +22,34 @@ const KEY_UP_MOVES = {
 };
 
 class GameView {
-    constructor(game, staticCtx, animatedCtx, gameCtx, offScreenCtx, animatedCanvas) {
+    constructor(game, staticCtx, animatedCtx, offScreenCtx, bool) {
         this.staticCtx = staticCtx;
         this.animatedCtx = animatedCtx;
-        this.gameCtx = gameCtx;
+        // this.gameCtx = gameCtx;
         this.offScreenBkg = offScreenCtx;
         this.preloaded = [];
         this.game = game;
         this.movingObject = this.game.addMovingObject();
         this.lastJump = new Date() / 1000;
         this.fps = 0;
+        this.house = new House(this.staticCtx);
         // this.particles = [];
-        this.init();
+        // this.init();
         this.keysPressed = this.keysPressed.bind(this);
         this.keysReleased = this.keysReleased.bind(this);
         this.bindKeyHandlers = this.bindKeyHandlers.bind(this);
         this.gameOverBox = document.getElementsByClassName("gameOver")[0];
+        this.startBox = document.getElementsByClassName("startBox")[0];
+        this.winBox = document.getElementsByClassName("winBox")[0];
+        this.bool = bool;
+    }
+
+    removeStartMessage() {
+        this.startBox.id = "";
+    }
+
+    winMessage() {
+        this.winBox.id = "visible";
     }
 
     gameOverMessage() {
@@ -65,9 +76,9 @@ class GameView {
                 this.movingObject.jump(-2, 25);
             }
         } else if (this.keys[65]) {
-            this.movingObject.power([-2, 0]);
+            this.movingObject.power([-4, 0]);
         } else if (this.keys[68]) {
-            this.movingObject.power([2, 0]);
+            this.movingObject.power([4, 0]);
         } else if (this.keys[87]) {
             if (new Date() / 1000 - this.lastJump > 2) {
                 this.movingObject.jump(0, -25);
@@ -108,27 +119,21 @@ class GameView {
     displayStaticBkgrd() {
         // this.gradBkg = new GradientBkg(this.staticCtx, 
             // { start: '#171e26', end: '#3f586b', middle: [] }); original
-        this.gradBkg = new GradientBkg(this.staticCtx, 
-            { start: '#233345', end: '#12437b', middle: [] });
-
-        // this.staticCtx.filter = 'blur(2px)';
         // this.gradBkg = new GradientBkg(this.staticCtx, 
-        //     { start: '#2473ab', end: '#5b7983', middle: ['#1e528e'] });
+        //     { start: '#233345', end: '#12437b', middle: [] });
 
-        // this.mountBkg1 = new MountainsBkg(this.staticCtx, 1, 750, '#384551');
-        // this.mountBkg2 = new MountainsBkg(this.staticCtx, 2, 700, '#2b3843');
-        // this.mountBkg3 = new MountainsBkg(this.staticCtx, 3, 500, '#26333E');
-
-        this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26');
-
-
-        this.gradBkg.draw();
-        // this.mountBkg1.draw();
-        // this.mountBkg2.draw();
-        // this.mountBkg3.draw();
+        // this.landscape = new Landscape(this.staticCtx);
+        // this.landscape.draw();
+        // this.house = new House(this.staticCtx);
+        // this.house.draw();
     }
 
     init() {
+        console.log("initialized");
+        
+        // debugger
+        // console.log(this.house);
+        this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26');
         this.displayStaticBkgrd();
         this.generateOffScreenParticles();
         
@@ -141,8 +146,9 @@ class GameView {
 
     start() {
         this.bindKeyHandlers();
+        this.removeStartMessage();
         this.lastTime = 0;
-        this.currTime = new Date().getMilliseconds();
+        this.init();
         requestAnimationFrame(this.animate.bind(this));
     }
 
@@ -150,31 +156,23 @@ class GameView {
         cancelAnimationFrame(this.animate.bind(this));
     }
 
-    setFrames() {
-        // need to create initialize timer method;
-        // to track curr milliseconds
-        // set frame in attr and display in animate();
-        let framesInSecond = this.ticker;
-        while (true) {
-            if (this.currTime % 1000 === 0) {
-                this.fps = this.ticker - framesInSecond;
-                framesInSecond = this.ticker;
-                // console.log(framesInSecond);
-            }
-        }
-    }
 
     animate(time) {
         if (this.game.gameOver) {
             this.gameOverMessage();
             this.stop();
+        }
+        else if (this.movingObject.pos[0] >= 1074) {
+            this.winMessage();
+            this.stop();
         } else {
             const timeDelta = time - this.lastTime;
-            this.animatedCtx.clearRect(0, 0, 1200, 800);
+            this.house.draw();
+            this.animatedCtx.clearRect(0, 0, 1200, 793);
             requestAnimationFrame(this.animate.bind(this));
             
             this.game.step(timeDelta);
-            this.game.draw(this.gameCtx);
+            this.game.draw(this.animatedCtx);
             
             for (let i = 0; i < this.stars.length; i++) {
                 this.stars[i].update();
@@ -197,6 +195,9 @@ class GameView {
             
             this.miniStars.forEach((mini, i) => {
                 mini.update();
+                if (mini.x > 1200 || mini.x < 0) {
+                    this.miniStars.splice(i, 1);
+                }
                 if (mini.ttl === 0) {
                     this.miniStars.splice(i, 1);
                 }
@@ -213,18 +214,40 @@ class GameView {
             
             // delete stars that have shrunk
             this.stars.forEach((star, index) => {
+                if (star.x > 1200 || star.x < 0) {
+                    this.stars.splice(index, 1);
+                }
+                // if (star.x > 1200) {
+                //     star.x = 0;
+                // } else if (star.x < 0) {
+                //     // this.stars.splice(index, 1);
+                //     star.x = 0;
+                // }
                 if (star.radius - 3 <= 0) {
                     this.stars.splice(index, 1);
                 }
             });
+            console.log('game.stars: ', this.game.stars.length);
+            console.log('stars: ', this.stars.length);
             this.game.stars.forEach((star, index) => {
-                // console.log(this.game.stars);
+                console.log(this.game.stars.length);
+                if (star.x > 1200 || star.x < 0) {
+                    this.game.stars.splice(index, 1);
+                }
+
+                // if (star.x > 1200) {
+                //     star.x = 0;
+                // } else if (star.x < 0) {
+                //     // this.stars.splice(index, 1);
+                //     star.x = 1200;
+                // }
+
                 if (star.radius - 3 <= 0) {
                     this.game.stars.splice(index, 1);
                 }
             });
 
-            if (this.ticker % 155 === 0) {
+            if (this.ticker % 30 === 0) {
                 const x = Math.random() * 1200;
                 const star = new Star({
                     x, y: -100, radius: 14, // 8,

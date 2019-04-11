@@ -4,7 +4,7 @@ function OffScreenCtx(scWidth, scHeight, divideBy) {
     this.canvas = document.createElement("canvas");
     this.canvas.width = Math.floor(scWidth / divideBy);
     this.canvas.height = Math.floor(scHeight / divideBy);
-    this.ctx = this.canvas.getContext('2d');
+    this.ctx = this.canvas.getContext('2d', {alpha: false});
     this.particles = [];
 }
 

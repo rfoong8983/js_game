@@ -3,7 +3,7 @@ import utils from '../utils/utils';
 import { merge } from 'lodash';
 
 const X = 1200;
-const Y = 800;
+const Y = 793;
 const FPS = 32;
 
 class Game {
@@ -58,7 +58,7 @@ class Game {
 
     addMovingObject () {
         const movingObject = new MovingObject({
-            pos: [10, 790], // add radius later to acct for object height
+            pos: [10, 560], // add radius later to acct for object height
             game: this,
             velocity: [0, 0],
             color: 'white',

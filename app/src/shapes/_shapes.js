@@ -1,7 +1,7 @@
 const canvas = document.querySelector('canvas');
 
 canvas.width = 1200;
-canvas.height = 800;
+canvas.height = 793;
 
 // returning a drawing context to the var c
 const c = canvas.getContext('2d');
@@ -85,7 +85,7 @@ export function CircleFromSquares(x, y, dx, dy, ox, oy, length, c1, c2) {
             this.dx = -this.dx;
         }
 
-        if (this.y + ((this.oy * z * 2) + this.length) > 800 || this.y < 0) {
+        if (this.y + ((this.oy * z * 2) + this.length) > 793 || this.y < 0) {
             this.dy = -this.dy;
         }
 
@@ -124,7 +124,7 @@ export function Circle(x, y, dx, dy, radius, col) {
             this.dx = -this.dx;
         }
 
-        if (this.y + this.radius > 800 || this.y - this.radius < 0) {
+        if (this.y + this.radius > 793 || this.y - this.radius < 0) {
             this.dy = -this.dy;
         }
 
@@ -154,7 +154,7 @@ export function generateArray(arr) {
         const c1 = `hsl(${h}, ${s}%, ${l}%)`;
         const c2 = colorArray[Math.floor(Math.random() * colorArray.length)];
         let x = Math.random() * (1200 - (r * 2)) + r;
-        let y = Math.random() * (800 - (r * 2)) + r;
+        let y = Math.random() * (793 - (r * 2)) + r;
         let dx = (Math.random() - 0.5) * 2;
         let dy = (Math.random() - 0.5) * 2;
         arr.push(new Circle(x, y, dx, dy, r, c2));
@@ -167,7 +167,7 @@ export function generateArray(arr) {
         const c1 = `hsl(${h}, ${s}%, ${l}%)`;
         const c2 = colorArray[Math.floor(Math.random() * colorArray.length)];
         let x = Math.random() * (1200 - (r * 2)) + r;
-        let y = Math.random() * (800 - (r * 2)) + r;
+        let y = Math.random() * (793 - (r * 2)) + r;
         let dx = randInRange(1, 4);
         let dy = randInRange(1, 4);
         // let dx = (Math.random() - 0.5) * 4;
@@ -177,7 +177,7 @@ export function generateArray(arr) {
     for (let i = 0; i < 5; i++) {
         let diameter = (10 * 8 + 40);
         let x = Math.random() * (1200 - (diameter)) + (diameter * 0.9 / 2);
-        let y = Math.random() * (800 - (diameter)) + (diameter * 0.9 / 2);
+        let y = Math.random() * (793 - (diameter)) + (diameter * 0.9 / 2);
         let dx = (Math.random() - 0.5) * 7;
         let dy = (Math.random() - 0.5) * 7;
         arr.push(new CircleFromSquares(x, y, dx, dy, 10, 10, 40, 'hsl(211, 29%, 88%)', '#ffe0a3'));

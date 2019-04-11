@@ -9,7 +9,7 @@
             margin: 0;
             height: 100vh;
             width: 100vw;
-            background: linear-gradient(to bottom,#233345,#12437b);
+            /* background: linear-gradient(to bottom,#233345,#12437b); */
         };
 
         .window {
@@ -28,32 +28,39 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            background: transparent;
         }
 
-        #staticCanvas, #animatedCanvas, #game, #gameMessages {
+        #animatedCanvas, #game, #gameMessages { /* #staticCanvas, */
             position: absolute;
+            /* left: 14%; */
             /* border: 1px solid rgb(128, 137, 144); light gray*/
             border-radius: 5px;
             /* border: 1px solid rgb(4, 4, 19); */
-            left: 14%;
+            
             top: 1%;
-            height: 800px;
+            height: 793px;
             width: 1200px;
         }
 
         #animatedCanvas {
+            background-image: url('../src/images/forest/Preview/Background.png');
+            /* background-image: url('../src/images/snowforest/PNG/Backgrounds/background.png'); 
+            background-repeat: no-repeat; */
+            background-position: bottom;
             z-index: 2;
         }
 
         #staticCanvas {
-            z-index: 0;
+            /* background-image: url('../src/images/forest/Preview/Background.png'); */
+            z-index: 1;
             border-bottom: 1px solid rgba(202, 204, 206, 0.4);
             /*border-bottom: 1px solid rgba(106, 120, 130, 0.7);*/
             box-shadow: 0 3px 3px -3px rgba(106, 120, 130, 0.7);
         };
 
         #game {
-            z-index: 1;
+            z-index: 0;
         }
 
 
@@ -88,10 +95,11 @@
                         <a>Unfortunately, your character has expired prior to returning home.</a>
                     </div>
                 </div>
-                <canvas id="staticCanvas"></canvas>
-                <canvas id="animatedCanvas">
-                </canvas>
-                <canvas id="game"></canvas>
+                <div id="canvases">
+                    <canvas id="animatedCanvas"></canvas>
+                    <canvas id="staticCanvas"></canvas>
+                    <canvas id="game"></canvas>
+                </div>
                 <!-- <script src="canvas.js"></script> -->
             </div>
         </div>

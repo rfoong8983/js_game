@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const gameCanvas = document.getElementById('game');
     
     const scWidth = 1200;
-    const scHeight = 800;
+    const scHeight = 793;
     staticCanvas.width = scWidth;
     staticCanvas.height = scHeight;
     animatedCanvas.width = scWidth;
@@ -16,12 +16,22 @@ document.addEventListener('DOMContentLoaded', function () {
     gameCanvas.width = scWidth;
     gameCanvas.height = scHeight;
     
+    // const staticCtx = staticCanvas.getContext('2d', { alpha: false });
     const staticCtx = staticCanvas.getContext('2d');
     const animatedCtx = animatedCanvas.getContext('2d');
-    const gameCtx = gameCanvas.getContext('2d');
+    // const gameCtx = gameCanvas.getContext('2d');
     const offScreenCtx = new OffScreenCtx(staticCanvas.width, staticCanvas.height, 2);
 
     const game = new Game();
-    new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx).start();
+    // new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx).start();
+    const play = document.getElementById('play');
+    let bool = true;
+    document.addEventListener('keydown', function() {
+        if (bool) {
+            bool = false;
+            new GameView(game, staticCtx, animatedCtx, offScreenCtx, bool).start();
+            play.click();
+        }
+    });
     // new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx);
 });
