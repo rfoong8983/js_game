@@ -64,25 +64,27 @@ class GameView {
         // write a jump function
 
         if (this.keys[87] && this.keys[68]) {
-            if (new Date() / 1000 - this.lastJump > 2) {
-                this.movingObject.jump(2, -25);
-            } else {
-                this.movingObject.jump(2, 25);
-            }
+            // if (new Date() / 1000 - this.lastJump > 2) {
+            //     this.movingObject.jump(2, -25);
+            // } else {
+            //     this.movingObject.jump(2, 25);
+            // }
+            this.movingObject.power([4, 0]);
         } else if (this.keys[87] && this.keys[65]) {
-            if (new Date() / 1000 - this.lastJump > 2) {
-                this.movingObject.jump(-2, -25);
-            } else {
-                this.movingObject.jump(-2, 25);
-            }
+            // if (new Date() / 1000 - this.lastJump > 2) {
+            //     this.movingObject.jump(-2, -25);
+            // } else {
+            //     this.movingObject.jump(-2, 25);
+            // }
+            this.movingObject.power([-4, 0]);
         } else if (this.keys[65]) {
             this.movingObject.power([-4, 0]);
         } else if (this.keys[68]) {
             this.movingObject.power([4, 0]);
         } else if (this.keys[87]) {
-            if (new Date() / 1000 - this.lastJump > 2) {
-                this.movingObject.jump(0, -25);
-            }
+            // if (new Date() / 1000 - this.lastJump > 2) {
+            //     this.movingObject.jump(0, -25);
+            // }
         } 
     }
 
