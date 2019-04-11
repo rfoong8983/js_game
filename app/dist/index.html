@@ -31,11 +31,11 @@
             background: transparent;
         }
 
-        .gameOver {
+        .hidden {
             opacity: 0;
         }
 
-        #animatedCanvas, #game, #gameMessages { /* #staticCanvas, */
+        #animatedCanvas, #game, #gameMessages, .audioWrap { /* #staticCanvas, */
             position: absolute;
             /* left: 14%; */
             /* border: 1px solid rgb(128, 137, 144); light gray*/
@@ -71,7 +71,7 @@
         #visible {
             opacity: 1;
             height: 48px;
-            width: 300px;
+            width: 330px;
             z-index: 3;
             border: 1px solid white;
             border-radius: 3px;
@@ -79,28 +79,107 @@
             display: flex;
             justify-content: center;
             font-family: 'Cormorant Garamond', serif;
-            font-weight: 300;
+            font-weight: 200;
+            font-size: 14px;
             font-style: italic;
             letter-spacing: 1px;
             padding: 4px;
             background-color: rgba(23,32,39, 0.7);
+            position: absolute;
         }
 
-        a {
+        button {
+            z-index: 3;
+            border: none;
+            height: 30px;
+            width: 30px;
+            background: transparent;
+        }
+
+        #plus {
+            background-image: url('../src/audio/plus.png');
+        }
+
+        #minus {
+            background-image: url('../src/audio/minus.png');
+        }
+
+        #play {
+            background-image: url('../src/audio/play.png');
+        }
+
+        #pause {
+            background-image: url('../src/audio/pause.png');
+        }
+
+        #plus, #minus, #play, #pause {
+            background-size: 15px;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: ease-in .3s;
+        }
+        #plus:hover, #minus:hover, #play:hover, #pause:hover {
+            filter: invert(100);
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+        }
+
+        .winBox, .gameOver, .startBox {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
             text-align: center;
         }
 
+        #retry {
+            text-decoration: none;
+            transition: 0.2s ease-in-out;
+            color: white;
+        }
+        #retry:hover {
+            color: rgb(77, 77, 210);
+        }
+        
     </style>
 </head>
     <body>
         <div class="window">
+            
+            <!-- <audio id="test" controls="controls">
+                <source src="../src/audio/viapurifico.mp3" type="audio/mpeg"/>
+                <button onclick="document.getElementById('test').play()">Play</button>
+            </audio> -->
             <div class="centered">
                 <div id="gameMessages">
-                    <div id="" class="gameOver">
+                    <div id="" class="gameOver hidden">
                         <a>Unfortunately, your character has expired prior to returning home.</a>
+                        <a id="retry" href="./index.html">Try again?</a>
+                    </div>
+                    <div id="visible" class="startBox hidden">
+                        <a>You decided to walk home today? What could go wrong? Press any key to start.</a>
+                    </div>
+                    <div id="" class="winBox hidden">
+                        <a>You've made it home! Time for a nap.</a>
+                        <a id="retry" href="./index.html">Play again? Click here.</a>
                     </div>
                 </div>
                 <div id="canvases">
+                    <div class="audioWrap">
+                        <audio id="test" src="../src/audio/viapurifico.mp3">
+                        </audio>
+                        <div class="controls">
+                            <button id="play" onclick="document.getElementById('test').play()"></button>
+                            <button id="pause" onclick="document.getElementById('test').pause()"></button>
+                            <button id="plus" onclick="document.getElementById('test').volume += 1"></button>
+                            <button id="minus" onclick="document.getElementById('test').volume -= 1"></button>
+                        </div>
+                    </div>
+
                     <canvas id="animatedCanvas"></canvas>
                     <canvas id="staticCanvas"></canvas>
                     <canvas id="game"></canvas>

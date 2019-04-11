@@ -22,7 +22,7 @@ const KEY_UP_MOVES = {
 };
 
 class GameView {
-    constructor(game, staticCtx, animatedCtx, offScreenCtx) {
+    constructor(game, staticCtx, animatedCtx, offScreenCtx, bool) {
         this.staticCtx = staticCtx;
         this.animatedCtx = animatedCtx;
         // this.gameCtx = gameCtx;
@@ -39,6 +39,17 @@ class GameView {
         this.keysReleased = this.keysReleased.bind(this);
         this.bindKeyHandlers = this.bindKeyHandlers.bind(this);
         this.gameOverBox = document.getElementsByClassName("gameOver")[0];
+        this.startBox = document.getElementsByClassName("startBox")[0];
+        this.winBox = document.getElementsByClassName("winBox")[0];
+        this.bool = bool;
+    }
+
+    removeStartMessage() {
+        this.startBox.id = "";
+    }
+
+    winMessage() {
+        this.winBox.id = "visible";
     }
 
     gameOverMessage() {
@@ -135,6 +146,7 @@ class GameView {
 
     start() {
         this.bindKeyHandlers();
+        this.removeStartMessage();
         this.lastTime = 0;
         this.init();
         requestAnimationFrame(this.animate.bind(this));
@@ -148,6 +160,10 @@ class GameView {
     animate(time) {
         if (this.game.gameOver) {
             this.gameOverMessage();
+            this.stop();
+        }
+        else if (this.movingObject.pos[0] >= 1074) {
+            this.winMessage();
             this.stop();
         } else {
             const timeDelta = time - this.lastTime;
@@ -179,6 +195,9 @@ class GameView {
             
             this.miniStars.forEach((mini, i) => {
                 mini.update();
+                if (mini.x > 1200 || mini.x < 0) {
+                    this.miniStars.splice(i, 1);
+                }
                 if (mini.ttl === 0) {
                     this.miniStars.splice(i, 1);
                 }
@@ -195,18 +214,40 @@ class GameView {
             
             // delete stars that have shrunk
             this.stars.forEach((star, index) => {
+                if (star.x > 1200 || star.x < 0) {
+                    this.stars.splice(index, 1);
+                }
+                // if (star.x > 1200) {
+                //     star.x = 0;
+                // } else if (star.x < 0) {
+                //     // this.stars.splice(index, 1);
+                //     star.x = 0;
+                // }
                 if (star.radius - 3 <= 0) {
                     this.stars.splice(index, 1);
                 }
             });
+            console.log('game.stars: ', this.game.stars.length);
+            console.log('stars: ', this.stars.length);
             this.game.stars.forEach((star, index) => {
-                // console.log(this.game.stars);
+                console.log(this.game.stars.length);
+                if (star.x > 1200 || star.x < 0) {
+                    this.game.stars.splice(index, 1);
+                }
+
+                // if (star.x > 1200) {
+                //     star.x = 0;
+                // } else if (star.x < 0) {
+                //     // this.stars.splice(index, 1);
+                //     star.x = 1200;
+                // }
+
                 if (star.radius - 3 <= 0) {
                     this.game.stars.splice(index, 1);
                 }
             });
 
-            if (this.ticker % 155 === 0) {
+            if (this.ticker % 30 === 0) {
                 const x = Math.random() * 1200;
                 const star = new Star({
                     x, y: -100, radius: 14, // 8,

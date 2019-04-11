@@ -24,6 +24,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const game = new Game();
     // new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx).start();
-    new GameView(game, staticCtx, animatedCtx, offScreenCtx).start();
+    const play = document.getElementById('play');
+    let bool = true;
+    document.addEventListener('keydown', function() {
+        if (bool) {
+            bool = false;
+            new GameView(game, staticCtx, animatedCtx, offScreenCtx, bool).start();
+            play.click();
+        }
+    });
     // new GameView(game, staticCtx, animatedCtx, gameCtx, offScreenCtx);
 });
