@@ -265,7 +265,7 @@ class GameView {
                 }
             });
 
-            if (this.ticker % 30 === 0) {
+            if (this.ticker % 70 === 0) {
                 const x = Math.random() * 1200;
                 const star = new Star({
                     x, y: -100, radius: 14, // 8,
