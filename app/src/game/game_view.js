@@ -1,19 +1,15 @@
 import Star from '../shapes/star';
 import Particle from '../shapes/particle';
-// import Landscape from '../background/landscape';
-const Landscape = require('../background/landscape');
 const House = require('../background/house');
-const GradientBkg = require('../background/gradient_bkgrd');
-const MountainsBkg = require('../background/mountains_bkgrd');
 const AmbientBkg = require('../background/ambient_bkgrd');
 
 
-const KEY_DOWN_MOVES = {
-    87: [0, -25], // 87 w
-    65: [-5, 0], // 65 a
-    // 83: [0, 5], // 85 s
-    68: [5, 0] // 68 d
-};
+// const KEY_DOWN_MOVES = {
+//     87: [0, -25], // 87 w
+//     65: [-5, 0], // 65 a
+//     // 83: [0, 5], // 85 s
+//     68: [5, 0] // 68 d
+// };
 const KEY_UP_MOVES = {
     87: [0, 25], // 87 w
     65: [0, 0], // 65 a
@@ -59,33 +55,16 @@ class GameView {
     keysPressed(e) {
         this.keys[e.keyCode] = true;
         e.preventDefault();
-        const move = KEY_DOWN_MOVES[e.keyCode];
-
-        // write a jump function
 
         if (this.keys[87] && this.keys[68]) {
-            // if (new Date() / 1000 - this.lastJump > 2) {
-            //     this.movingObject.jump(2, -25);
-            // } else {
-            //     this.movingObject.jump(2, 25);
-            // }
             this.movingObject.power([2, 0]);
         } else if (this.keys[87] && this.keys[65]) {
-            // if (new Date() / 1000 - this.lastJump > 2) {
-            //     this.movingObject.jump(-2, -25);
-            // } else {
-            //     this.movingObject.jump(-2, 25);
-            // }
             this.movingObject.power([-2, 0]);
         } else if (this.keys[65]) {
             this.movingObject.power([-2, 0]);
         } else if (this.keys[68]) {
             this.movingObject.power([2, 0]);
-        } else if (this.keys[87]) {
-            // if (new Date() / 1000 - this.lastJump > 2) {
-            //     this.movingObject.jump(0, -25);
-            // }
-        } 
+        }
     }
 
     keysReleased(e) {
@@ -105,6 +84,9 @@ class GameView {
     // move gradients and static images out of animation
     // draw snow in off-screen canvas
     // putImageData onto my screen when ticker % x === 0
+
+    // generates snow once on game start
+    // used by ambient background to render particles
     generateOffScreenParticles() {
         for (let i = 0; i < 70; i++) {
             this.preloaded.push(new Particle({
@@ -199,7 +181,6 @@ class GameView {
                 //  ###############   COMMENT ME BBACK IN !!!!
                 // ###### MOVING BKG
             if (this.ticker === 0 || this.ticker % 185 === 0) {
-                // this.generateOffScreenParticles();
                 this.ambientBkg.generate(this.preloaded);
             }
             
