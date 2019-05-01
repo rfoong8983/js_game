@@ -117,25 +117,9 @@ class GameView {
             }));
         }
     }
-    
-    displayStaticBkgrd() {
-        // this.gradBkg = new GradientBkg(this.staticCtx, 
-            // { start: '#171e26', end: '#3f586b', middle: [] }); original
-        // this.gradBkg = new GradientBkg(this.staticCtx, 
-        //     { start: '#233345', end: '#12437b', middle: [] });
-
-        // this.landscape = new Landscape(this.staticCtx);
-        // this.landscape.draw();
-        // this.house = new House(this.staticCtx);
-        // this.house.draw();
-    }
 
     init() {
-        
-        // debugger
-        // console.log(this.house);
         this.ambientBkg = new AmbientBkg(this.animatedCtx, 2, '#171e26');
-        this.displayStaticBkgrd();
         this.generateOffScreenParticles();
         
         this.keys = [];
@@ -162,17 +146,6 @@ class GameView {
             } else {
                 link.id = 'retry';
             }
-            // if (this.gameOverBox.classList.contains('blink')) {
-            //     this.gameOverBox.classList.remove('blink');
-            //     console.log('no blink');
-            //     console.log(this.gameOverBox.classList);
-            //     console.log(this.gameOverBox.id);
-            // } else {
-            //     this.gameOverBox.classList.add('blink');
-            //     console.log('blink');
-            //     console.log(this.gameOverBox.classList);
-            //     console.log(this.gameOverBox.id);
-            // }
         }, 1200);
     }
 
@@ -237,12 +210,7 @@ class GameView {
                 if (star.x > 1200 || star.x < 0) {
                     this.stars.splice(index, 1);
                 }
-                // if (star.x > 1200) {
-                //     star.x = 0;
-                // } else if (star.x < 0) {
-                //     // this.stars.splice(index, 1);
-                //     star.x = 0;
-                // }
+                
                 if (star.radius - 3 <= 0) {
                     this.stars.splice(index, 1);
                 }
@@ -252,13 +220,6 @@ class GameView {
                 if (star.x > 1200 || star.x < 0) {
                     this.game.stars.splice(index, 1);
                 }
-
-                // if (star.x > 1200) {
-                //     star.x = 0;
-                // } else if (star.x < 0) {
-                //     // this.stars.splice(index, 1);
-                //     star.x = 1200;
-                // }
 
                 if (star.radius - 3 <= 0) {
                     this.game.stars.splice(index, 1);
@@ -276,8 +237,6 @@ class GameView {
                 this.game.addStar(star);
             }
 
-            // this.ctx.font = '20px Helvetica';
-            // this.ctx.fillText(`hello`, 100, 500);
             this.ticker++;
         }
     }
