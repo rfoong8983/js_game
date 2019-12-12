@@ -1,1 +1,1 @@
-Link to the live game! [Play now!](https://rfoong8983.github.io/js_game/app/dist/)
+Link to the live game! [Play now!](https://rfoong8983.github.io/Kawaii-5-0/app/dist/index.html)
